@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "faststripe"
+  site-url: "https://AnswerDotAI.github.io/faststripe"
+  description: "Fastest way to use the Stripe API in python"
+  repo-branch: main
+  repo-url: "https://github.com/AnswerDotAI/faststripe"
