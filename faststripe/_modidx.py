@@ -5,4 +5,5 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://AnswerDotAI.github.io',
                 'git_url': 'https://github.com/AnswerDotAI/faststripe',
                 'lib_path': 'faststripe'},
-  'syms': {'faststripe.core': {}}}
+  'syms': { 'faststripe.core': { 'faststripe.core._mk_func': ('core.html#_mk_func', 'faststripe/core.py'),
+                                 'faststripe.core.stripe_endpoints': ('core.html#stripe_endpoints', 'faststripe/core.py')}}}
