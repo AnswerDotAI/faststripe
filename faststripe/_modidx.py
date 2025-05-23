@@ -5,4 +5,4 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://AnswerDotAI.github.io',
                 'git_url': 'https://github.com/AnswerDotAI/faststripe',
                 'lib_path': 'faststripe'},
-  'syms': {'faststripe.core': {'faststripe.core.foo': ('core.html#foo', 'faststripe/core.py')}}}
+  'syms': {'faststripe.core': {}}}
