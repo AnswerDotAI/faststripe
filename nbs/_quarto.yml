@@ -1,5 +1,6 @@
 project:
   type: website
+  title: "FastStripe"
 
 format:
   html:
@@ -10,13 +11,35 @@ format:
   commonmark: default
 
 website:
+  title: "FastStripe"
+  description: "Fastest way to use the Stripe API in Python"
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
   navbar:
+    title: false
+    logo: "logo.svg"
     background: primary
     search: true
+    left:
+      - text: "Home"
+        href: https://stripe.fast.ai
+    right:
+      - icon: github
+        href: "https://github.com/answerdotai/faststripe"
+      - icon: twitter
+        href: https://x.com/answerdotai
+        aria-label: Answer.ai Twitter
   sidebar:
     style: floating
+    contents:
+      - text: "Get Started"
+        href: index.ipynb
+      - section: "How To"
+        contents: how_to/*
+      - section: Explanations
+        contents: explains/*
+      - section: Reference
+        contents: reference/*
 
-metadata-files: [nbdev.yml, sidebar.yml]
+metadata-files: [nbdev.yml]
