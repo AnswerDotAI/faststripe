@@ -79,7 +79,6 @@ class StripeApi:
         eps = stripe_endpoints(stripe_spec)
         groups = defaultdict(list)
         for ep in eps:
-            # print(ep['path'], ep['verb'], ep['op_id'], ep['summary'], ep['params'])
             r, nm = _parse_operation_id(ep['op_id'])
             groups[r].append((ep['path'], ep['verb'], nm, ep['summary'], ep['params']))
         for r, mtds in groups.items():
@@ -87,3 +86,45 @@ class StripeApi:
             for path, verb, method_name, summary, params in mtds:
                 setattr(group, method_name, _mk_func(path, verb, params, summary, hdrs=self.hdrs))
             setattr(self, r, group)
+
+# %% ../nbs/00_core.ipynb 39
+@patch
+def find_product(self:StripeApi, name: str):
+    "Find a product by name"
+    prods = L(self.products.fetch().data)
+    return first(prods, lambda p: p.name == name)
+
+# %% ../nbs/00_core.ipynb 41
+@patch
+def find_prices(self:StripeApi, product_id: str):
+    "Find all prices associated with a product id"
+    return L(self.prices.fetch().data).filter(lambda p: p.product == product_id)
+
+# %% ../nbs/00_core.ipynb 43
+@patch
+def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', recurring=None):
+    "Create a product and price if they don't exist"
+    prod = self.find_product(product_name) or self.products.create(name=product_name)
+    price = first(self.find_prices(prod.id)) or self.prices.create(product=prod.id, unit_amount=amount_cents,
+                                                                   currency=currency, recurring=recurring)
+    return prod, price
+
+# %% ../nbs/00_core.ipynb 46
+@patch
+def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd'):
+    "Create a simple one-time payment checkout"
+    _, price = self.priced_product(product_name, amount_cents, currency)
+    return self.checkout_sessions.create(mode='payment', line_items=[dict(price=price.id, quantity=1)],
+                                         success_url=success_url, cancel_url=cancel_url)
+
+# %% ../nbs/00_core.ipynb 49
+@patch
+def subscription(self:StripeApi, product_name, amount_cents , success_url, cancel_url,
+                 currency='usd', interval='month', customer_email=None):
+    "Create a simple recurring subscription"
+    _, price = self.priced_product(product_name, amount_cents, currency, recurring=dict(interval=interval))
+    
+    params = dict(mode='subscription', line_items=[dict(price=price.id, quantity=1)],
+                  success_url=success_url, cancel_url=cancel_url)
+    if customer_email: params['customer_email'] = customer_email
+    return self.checkout_sessions.create(**params)
