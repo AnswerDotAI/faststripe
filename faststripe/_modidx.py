@@ -15,5 +15,7 @@ d = { 'settings': { 'branch': 'main',
                                  'faststripe.core.StripeApi.subscription': ('core.html#stripeapi.subscription', 'faststripe/core.py'),
                                  'faststripe.core._flatten_data': ('core.html#_flatten_data', 'faststripe/core.py'),
                                  'faststripe.core._mk_func': ('core.html#_mk_func', 'faststripe/core.py'),
-                                 'faststripe.core._parse_operation_id': ('core.html#_parse_operation_id', 'faststripe/core.py'),
-                                 'faststripe.core.stripe_endpoints': ('core.html#stripe_endpoints', 'faststripe/core.py')}}}
+                                 'faststripe.core._parse_operation_id': ('core.html#_parse_operation_id', 'faststripe/core.py')},
+            'faststripe.endpoints': {},
+            'faststripe.spec': { 'faststripe.spec.stripe_endpoints': ('spec.html#stripe_endpoints', 'faststripe/spec.py'),
+                                 'faststripe.spec.update_version': ('spec.html#update_version', 'faststripe/spec.py')}}}
