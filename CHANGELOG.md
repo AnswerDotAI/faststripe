@@ -2,7 +2,7 @@
 
 <!-- do not remove -->
 
-## 2025.05.28
+## 2025.05.28.1
 
 ### New Features
 
@@ -13,17 +13,12 @@
 - fix list items in docs ([#4](https://github.com/AnswerDotAI/faststripe/issues/4))
 
 
+
 ## 2025.05.28
 
 ### New Features
 
 - tie faststripe version to stripe api version ([#2](https://github.com/AnswerDotAI/faststripe/issues/2))
-
-
-
-## 2025.05.28
-
-
 
 
 ## 0.0.1
