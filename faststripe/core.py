@@ -32,6 +32,7 @@ def _flatten_data(data, prefix=''):
 
 # %% ../nbs/01_core.ipynb 13
 def _parse_operation_id(op_id):
+    'Parse the operation ID to get the resource and verb'
     parts = re.findall(r'[A-Z][a-z]*', op_id)
     verb,*resource_parts = [p.lower() for p in parts]
     r = '_'.join(resource_parts) if resource_parts else 'misc'
@@ -40,6 +41,7 @@ def _parse_operation_id(op_id):
 
 # %% ../nbs/01_core.ipynb 17
 def _mk_func(path, verb, param_info, summary, hdrs={}):
+    'Create a function from the Stripe API endpoint'
     sig_params = [Parameter(param['name'], Parameter.KEYWORD_ONLY, default=None) for param in param_info]
     param_docs = '\n'.join(f"    {param['name']}: {param['description']}" for param in param_info)
     docstring = f"{summary}\n\nParameters:\n{param_docs}" if param_docs else summary
@@ -67,42 +69,41 @@ class StripeApi:
 # %% ../nbs/01_core.ipynb 28
 @patch
 def find_product(self:StripeApi, name: str):
-    "Find a product by name"
+    'Find a product by name'
     prods = L(self.products.fetch().data)
     return first(prods, lambda p: p.name == name)
 
 # %% ../nbs/01_core.ipynb 30
 @patch
 def find_prices(self:StripeApi, product_id: str):
-    "Find all prices associated with a product id"
+    'Find all prices associated with a product id'
     return L(self.prices.fetch().data).filter(lambda p: p.product == product_id)
 
 # %% ../nbs/01_core.ipynb 32
 @patch
-def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', recurring=None):
+def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', recurring=None, description=None):
     "Create a product and price if they don't exist"
-    prod = self.find_product(product_name) or self.products.create(name=product_name)
-    params = dict(product=prod.id, unit_amount=amount_cents, currency=currency)
-    if recurring: params['recurring'] = recurring
-    price = first(self.find_prices(prod.id)) or self.prices.create(**params)
+    prod_params = dict(name=product_name)
+    if description: prod_params['description'] = description
+    prod = self.find_product(product_name) or self.products.create(**prod_params)
+    price_params = dict(product=prod.id, unit_amount=amount_cents, currency=currency)
+    if recurring: price_params['recurring'] = recurring
+    price = first(self.find_prices(prod.id)) or self.prices.create(**price_params)
     return prod, price
 
 # %% ../nbs/01_core.ipynb 35
 @patch
-def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd'):
-    "Create a simple one-time payment checkout"
+def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', **kw):
+    'Create a simple one-time payment checkout'
     _, price = self.priced_product(product_name, amount_cents, currency)
     return self.checkout_sessions.create(mode='payment', line_items=[dict(price=price.id, quantity=1)],
-                                         success_url=success_url, cancel_url=cancel_url)
+                                         automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kw)
 
 # %% ../nbs/01_core.ipynb 38
 @patch
-def subscription(self:StripeApi, product_name, amount_cents , success_url, cancel_url,
-                 currency='usd', interval='month', customer_email=None):
-    "Create a simple recurring subscription"
+def subscription(self:StripeApi, product_name, amount_cents, success_url, cancel_url,
+                 currency='usd', interval='month', **kw):
+    'Create a simple recurring subscription'
     _, price = self.priced_product(product_name, amount_cents, currency, recurring=dict(interval=interval))
-    
-    params = dict(mode='subscription', line_items=[dict(price=price.id, quantity=1)],
-                  success_url=success_url, cancel_url=cancel_url)
-    if customer_email: params['customer_email'] = customer_email
-    return self.checkout_sessions.create(**params)
+    return self.checkout_sessions.create(mode='subscription', success_url=success_url, cancel_url=cancel_url,
+                                         line_items=[dict(price=price.id, quantity=1)], **kw)
