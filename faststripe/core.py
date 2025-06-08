@@ -93,10 +93,10 @@ def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', r
 
 # %% ../nbs/01_core.ipynb 35
 @patch
-def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', **kw):
+def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', quantity=1, **kw):
     'Create a simple one-time payment checkout'
     _, price = self.priced_product(product_name, amount_cents, currency)
-    return self.checkout_sessions.create(mode='payment', line_items=[dict(price=price.id, quantity=1)],
+    return self.checkout_sessions.create(mode='payment', line_items=[dict(price=price.id, quantity=quantity)],
                                          automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kw)
 
 # %% ../nbs/01_core.ipynb 38
