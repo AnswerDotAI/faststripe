@@ -1,4 +1,3 @@
-from pathlib import Path
 from fastcore.all import *
 from fastcore.py2pyi import create_pyi
 from faststripe.core import StripeApi

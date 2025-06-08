@@ -17,17 +17,13 @@ Before starting this tutorial, you’ll need:
 FastStripe offers several advantages over the official Stripe Python
 SDK:
 
-- **🔍 Self-documenting**: See all available parameters with
-  descriptions in your IDE
-- **🎯 Simplified workflows**: High-level methods for common payment
+- **Self-documenting**: See all available parameters with descriptions
+  in your IDE
+- **Simplified workflows**: High-level methods for common payment
   patterns
-- **📦 Lightweight**: Minimal dependencies (just `httpx` and `fastcore`)
-- **🏗️ Consistent API**: Uniform `create`/`fetch` naming across all
+- **Lightweight**: Minimal dependencies (just `httpx` and `fastcore`)
+- **Consistent API**: Uniform `create`/`fetch` naming across all
   resources
-- **💫 AttrDict responses**: Access response data with dot notation
-  (`customer.email`)
-- **🔧 Automatic data handling**: Nested dictionaries flattened for
-  Stripe’s API format
 
 ## Step 1: Installation
 
@@ -46,7 +42,7 @@ pip install git+https://github.com/AnswerDotAI/faststripe.git
 ## Versioning
 
 FastStripe versions follow Stripe’s API versioning scheme (e.g.,
-`2025.05.28`). Each FastStripe release is pinned to a specific Stripe
+`2025.05.28.x`). Each FastStripe release is pinned to a specific Stripe
 API version, ensuring:
 
 - **Stability**: Your code won’t break when Stripe updates their API
@@ -55,7 +51,8 @@ API version, ensuring:
   application
 
 When you install FastStripe, you get a specific snapshot of the Stripe
-API that’s been tested and validated.
+API that’s been tested and validated. The minor version represents
+non-breaking changes we add such as better higher-level APIs.
 
 ## Step 2: Set up your API key
 
@@ -108,48 +105,10 @@ sapi.customers.create?
         cash_balance=None,
         description=None,
         email=None,
-        expand=None,
-        invoice_prefix=None,
-        invoice_settings=None,
-        metadata=None,
-        name=None,
-        next_invoice_sequence=None,
-        payment_method=None,
-        phone=None,
-        preferred_locales=None,
-        shipping=None,
-        source=None,
-        tax=None,
-        tax_exempt=None,
-        tax_id_data=None,
-        test_clock=None,
-    )
-    Docstring:
-    Create a customer
+        ...
 
-    Parameters:
-        address: The customer's address.
-        balance: An integer amount in cents (or local equivalent) that represents the customer's current balance, which affect the customer's future invoices. A negative amount represents a credit that decreases the amount due on an invoice; a positive amount increases the amount due on an invoice.
-        cash_balance: Balance information and default balance settings for this customer.
-        description: An arbitrary string that you can attach to a customer object. It is displayed alongside the customer in the dashboard.
-        email: Customer's email address. It's displayed alongside the customer in your dashboard and can be useful for searching and tracking. This may be up to *512 characters*.
-        expand: Specifies which fields in the response should be expanded.
-        invoice_prefix: The prefix for the customer used to generate unique invoice numbers. Must be 3–12 uppercase letters or numbers.
-        invoice_settings: Default invoice settings for this customer.
-        metadata: Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
-        name: The customer's full name or business name.
-        next_invoice_sequence: The sequence to be used on the customer's next invoice. Defaults to 1.
-        payment_method: 
-        phone: The customer's phone number.
-        preferred_locales: Customer's preferred languages, ordered by preference.
-        shipping: The customer's shipping information. Appears on invoices emailed to this customer.
-        source: 
-        tax: Tax details about the customer.
-        tax_exempt: The customer's tax exemption. One of `none`, `exempt`, or `reverse`.
-        tax_id_data: The customer's tax IDs.
-        test_clock: ID of the test clock to attach to the customer.
-    File:      ~/aai-ws/faststripe/faststripe/core.py
-    Type:      function
+It also supports the jump to definition or by typing
+`sapi.customers.create(`!
 
 ### High-Level Convenience Methods
 
