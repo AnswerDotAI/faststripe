@@ -26,9 +26,8 @@ Here are some tips on using FastStripe:
 ## Architecture & Implementation
 
 - [Architecture Overview](https://stripe.fast.ai/explains/architecture.html.md): Core design patterns and dynamic API generation
-- [OpenAPI Integration](https://stripe.fast.ai/explains/01_openapi_integration.html.md): How FastStripe uses Stripe's OpenAPI spec
+- [OpenAPI Integration](https://stripe.fast.ai/explains/openapi_integration.html.md): How FastStripe uses Stripe's OpenAPI spec
 
 ## API Reference
 
-- [Core API](https://stripe.fast.ai/reference/00_api_reference.html.md): Complete reference for all FastStripe classes and methods
-- [Stripe OpenAPI Spec](https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json): Official Stripe API specification used by FastStripe
+- [Core API](https://stripe.fast.ai/reference/api_reference.html.md): Complete reference for all FastStripe classes and methods
