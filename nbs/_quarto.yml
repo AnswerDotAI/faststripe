@@ -1,6 +1,10 @@
 project:
   type: website
   title: "FastStripe"
+  post-render:
+    - llms_txt2ctx llms.txt --save_nbdev_fname llms-ctx.txt
+  resources:
+    - "*.txt"
 
 format:
   html:
