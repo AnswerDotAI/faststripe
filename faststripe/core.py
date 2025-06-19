@@ -57,8 +57,8 @@ def _flatten_data(data, prefix=''):
 names = lambda x: [o['name'] for o in x]
 
 class _OAPIVerb(_OAPIObj):
-    __slots__ = 'path verb res name summary pparams qparams url data hdrs __doc__'.split()
-    def __init__(self, path, verb, op_id, summary, qparams, data, url, hdrs, kwargs={}):
+    __slots__ = 'path verb res name summary pparams qparams url data hdrs client __doc__'.split()
+    def __init__(self, path, verb, op_id, summary, qparams, data, url, hdrs, client, kwargs={}):
         res, name = op2nm(op_id) # custom per oapi spec
         name = '_'.join(name)
         path, *_ = partial_format(path, **kwargs)
@@ -68,12 +68,12 @@ class _OAPIVerb(_OAPIObj):
         store_attr()
 
     def __call__(self, *args, **kwargs):
+        'Call the API endpoint with the given arguments'
         flds = self.pparams + names(self.qparams) + names(self.data)
         for a, b in zip(args, flds): kwargs[b] = a
         route_p, query_p, data_p = [{p: kwargs[p] for p in o if p in kwargs}
                                     for o in (self.pparams, names(self.qparams), names(self.data))]
-        return dict2obj(getattr(httpx, self.verb)(self.url + '/' + self.path, headers=self.hdrs, params=query_p,
-                                                  **(dict(data=_flatten_data(data_p)) if self.verb != 'get' else {})).json())
+        return self.client(self.path, self.verb, route=route_p, query=query_p, data=data_p)
 
     def __str__(self): return f'{self.res}.{self.name}{signature(self)}'
     @property
@@ -97,28 +97,43 @@ class StripeApi:
     def __init__(self, api_key=None, base_url=stripe_api_url):
         self.api_key,self.base_url = api_key,base_url
         self.hdrs = {'Authorization': f'Bearer {self.api_key}'}
-        verbs = L(eps).map(lambda x: _OAPIVerb(**x, url=base_url, hdrs=self.hdrs))
+        verbs = L(eps).map(lambda x: _OAPIVerb(**x, url=base_url, hdrs=self.hdrs, client=self))
         self.func_dict = {f'{o.path}:{o.verb.upper()}':o for o in verbs}
-        self.groups = {k.replace('-','_'):_OAPIVerbGroup(k,v) for k,v in groupby(verbs, 'res').items()}
+        self.groups = {k.replace('-','_'): _OAPIVerbGroup(k,v) for k,v in groupby(verbs, 'res').items()}
+    
+    def __call__(self, path:str, verb:str=None, headers:dict=None, route:dict=None, query:dict=None, data=None):
+        'Call the API endpoint with the given arguments'
+        headers = {**self.hdrs, **(headers or {})}
+        if route:
+            for k,v in route.items(): route[k] = quote(str(route[k]))
+        if data: data = _flatten_data(data)
+        res, self.recv_hdrs = urlsend(self.base_url + '/' + path, verb, headers=headers, return_headers=True,
+                                      route=route or None, query=query or None, data=data or None, return_json=True,
+                                      json_data=False)
+        return dict2obj(res)
     
     def __dir__(self): return super().__dir__() + list(self.groups)
     def _repr_markdown_(self): return "\n".join(f"- {o}" for o in sorted(self.groups))
     def __getattr__(self,k): return self.groups[k] if 'groups' in vars(self) and k in self.groups else stop(AttributeError(k))
+    def __getitem__(self, k):
+        "Lookup and call an endpoint by path and verb (which defaults to 'GET')"
+        a,b = k if isinstance(k,tuple) else (k,'GET')
+        return self.func_dict[f'{a}:{b.upper()}']
 
-# %% ../nbs/01_core.ipynb 39
+# %% ../nbs/01_core.ipynb 44
 @patch
 def find_product(self:StripeApi, name: str):
     'Find a product by name'
     prods = L(self.products.get().data)
     return first(prods, lambda p: p.name == name)
 
-# %% ../nbs/01_core.ipynb 41
+# %% ../nbs/01_core.ipynb 46
 @patch
 def find_prices(self:StripeApi, product_id: str):
     'Find all prices associated with a product id'
     return L(self.prices.get().data).filter(lambda p: p.product == product_id)
 
-# %% ../nbs/01_core.ipynb 43
+# %% ../nbs/01_core.ipynb 48
 @patch
 def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', recurring=None, description=None):
     "Create a product and price if they don't exist"
@@ -130,7 +145,7 @@ def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', r
     price = first(self.find_prices(prod.id)) or self.prices.post(**price_params)
     return prod, price
 
-# %% ../nbs/01_core.ipynb 46
+# %% ../nbs/01_core.ipynb 51
 @patch
 def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', quantity=1, **kw):
     'Create a simple one-time payment checkout'
@@ -138,7 +153,7 @@ def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, ca
     return self.checkout.sessions_post(mode='payment', line_items=[dict(price=price.id, quantity=quantity)],
                                        automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kw)
 
-# %% ../nbs/01_core.ipynb 49
+# %% ../nbs/01_core.ipynb 54
 @patch
 def subscription(self:StripeApi, product_name, amount_cents, success_url, cancel_url,
                  currency='usd', interval='month', **kw):
