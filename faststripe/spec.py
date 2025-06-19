@@ -6,7 +6,7 @@ __all__ = ['build_eps', 'update_version']
 # %% ../nbs/00_spec.ipynb 1
 from fastcore.all import *
 
-import httpx, json, os, pprint
+import os, pprint
 
 # %% ../nbs/00_spec.ipynb 19
 _lu_type = dict(zip(
@@ -44,9 +44,9 @@ def _info(desc):
             'qparams': qparams, 'summary': desc.get('summary','')}
 
 # %% ../nbs/00_spec.ipynb 30
-def build_eps(url, doc_url):
+def build_eps(url):
     "Build module metadata.py from an Open API spec and optionally filter by a path `pre`"
-    spec = httpx.get(url, follow_redirects=True).json()
+    spec = urlsend(url, 'GET', return_json=True)
     _funcs = [{'path': p, 'verb': v, **_info(desc)}
               for p, vs in spec['paths'].items() for v, desc in vs.items()]
     return _funcs
@@ -56,7 +56,7 @@ def build_eps(url, doc_url):
 def update_version():
     'Update the version to the latest version of the Stripe API and the endpoints file.'
     cfg = Config.find("settings.ini")
-    stripe_spec = httpx.get(stripe_openapi_url).json()
+    stripe_spec = urlsend(stripe_openapi_url, 'GET', return_json=True)
     stripe_version = stripe_spec['info']['version'].split('.')[0].replace('-', '.')
 
     if cfg.d['version'] == stripe_version: return

@@ -6,12 +6,11 @@
 __all__ = ['stripe_api_url', 'names', 'op2nm', 'StripeApi']
 
 # %% ../nbs/01_core.ipynb 2
-from collections import defaultdict
 from fastcore.all import *
 from .endpoints import eps
 from inspect import Parameter, Signature
 
-import httpx, re
+import re
 
 # %% ../nbs/01_core.ipynb 4
 stripe_api_url = 'https://api.stripe.com'
