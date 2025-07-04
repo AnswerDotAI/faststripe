@@ -21,9 +21,9 @@ SDK:
   in your IDE
 - **Simplified workflows**: High-level methods for common payment
   patterns
-- **Lightweight**: Minimal dependencies (just `httpx` and `fastcore`)
-- **Consistent API**: Uniform `create`/`fetch` naming across all
-  resources
+- **Lightweight**: Minimal dependencies (just `fastcore`)
+- **Consistent API**: HTTP verb-based methods (`post`, `get`) with full
+  parameter visibility
 
 ## Step 1: Installation
 
@@ -80,11 +80,11 @@ sapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])
 
 ``` python
 # Create a customer
-customer = sapi.customers.create(email='user@example.com', name='John Doe')
+customer = sapi.customers.post(email='user@example.com', name='John Doe')
 print(customer.id, customer.email)
 ```
 
-    cus_SMsM453Vb64XcF user@example.com
+    cus_ScUPG9yb5cPV6G user@example.com
 
 ### Self-Documenting API
 
@@ -94,21 +94,19 @@ available without checking external docs:
 
 ``` python
 # Explore available methods and their parameters
-sapi.customers.create?
+sapi.customers.post?
 ```
 
-    Signature:
-    sapi.customers.create(
-        *,
-        address=None,
-        balance=None,
-        cash_balance=None,
-        description=None,
-        email=None,
+    Signature:     
+    sapi.customers.post(
+        address: object = None,
+        balance: int = None,
+        cash_balance: dict = None,
+        description: str = None,
+        email: str = None,
         ...
 
-It also supports the jump to definition or by typing
-`sapi.customers.create(`!
+It also supports tab completion when filling in parameters!
 
 ### High-Level Convenience Methods
 
@@ -125,7 +123,7 @@ checkout = sapi.one_time_payment(
 print(f"Payment URL: {checkout.url[:64]}...")
 ```
 
-    Payment URL: https://billing.answer.ai/c/pay/cs_test_a17Swg1TqARRl0ItVDkdelkR...
+    Payment URL: https://billing.answer.ai/c/pay/cs_test_a107uQXcqI6W9iD09wOmVinc...
 
 ``` python
 # Create a subscription checkout session
@@ -139,7 +137,7 @@ subscription = sapi.subscription(
 print(f"Subscription URL: {subscription.url[:64]}...")
 ```
 
-    Subscription URL: https://billing.answer.ai/c/pay/cs_test_a1xQzvl0Qd6arXt9EKWsYDJ7...
+    Subscription URL: https://billing.answer.ai/c/pay/cs_test_a1O4fjw1mgs11zkLGgHZTp6T...
 
 ### Complete API Coverage
 
@@ -148,15 +146,15 @@ resource groups:
 
 ``` python
 # Access any Stripe resource with consistent patterns
-product = sapi.products.create(name='New Product')
+product = sapi.products.post(name='New Product')
 print(f"Created product: {product.name} with ID: {product.id}")
 ```
 
-    Created product: New Product with ID: prod_SMsMg2mD205PNM
+    Created product: New Product with ID: prod_ScUPzNzla8KDC6
 
 ``` python
 # Fetch existing resources
-customers = sapi.customers.fetch(limit=3)
+customers = sapi.customers.get(limit=3)
 print(f"Found {len(customers.data)} customers")
 ```
 
@@ -164,8 +162,112 @@ print(f"Found {len(customers.data)} customers")
 
 ``` python
 # All responses are AttrDict objects for easy dot notation access
-payment_intent = sapi.payment_intents.create(amount=1000, currency='usd')
+payment_intent = sapi.payment.intents_post(amount=1000, currency='usd')
 print(f"Payment intent status: {payment_intent.status}, amount: ${payment_intent.amount/100}")
 ```
 
     Payment intent status: requires_payment_method, amount: $10.0
+
+### Pagination Support
+
+FastStripe includes built-in utilities for handling paginated API
+responses, making it easy to work with large requests.
+
+``` python
+from faststripe.page import paged, pages
+
+
+for p in paged(sapi.customers.get, limit=5): break
+print(f"Got {len(p.data)} customers")
+print(f"Has more pages: {p.has_more}")
+```
+
+    Got 5 customers
+    Has more pages: True
+
+``` python
+sapi.products
+```
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+- [products.get](https://docs.stripe.com/api/products/list)(active:
+  ‘str’, created: ‘str’, ending_before: ‘str’, expand: ‘str’, ids:
+  ‘str’, limit: ‘str’, shippable: ‘str’, starting_after: ‘str’, url:
+  ‘str’): *List all products*
+- [products.post](https://docs.stripe.com/api/products/create)(active:
+  bool = None, default_price_data: dict = None, description: str = None,
+  expand: list = None, id: str = None, images: list = None,
+  marketing_features: list = None, metadata: dict = None, name: str =
+  None, package_dimensions: dict = None, shippable: bool = None,
+  statement_descriptor: str = None, tax_code: str = None, unit_label:
+  str = None, url: str = None): *Create a product*
+- [products.search_get](https://docs.stripe.com/api/searchs/retrieve)(expand:
+  ‘str’, limit: ‘str’, page: ‘str’, query: ‘str’): *Search products*
+- [products.id_delete](https://docs.stripe.com/api/products/delete)(id):
+  *Delete a product*
+- [products.id_get](https://docs.stripe.com/api/products/delete)(id,
+  expand: ‘str’): *Retrieve a product*
+- [products.id_post](https://docs.stripe.com/api/products/update)(id,
+  active: bool = None, default_price: str = None, description: object =
+  None, expand: list = None, images: object = None, marketing_features:
+  object = None, metadata: object = None, name: str = None,
+  package_dimensions: object = None, shippable: bool = None,
+  statement_descriptor: str = None, tax_code: object = None, unit_label:
+  object = None, url: object = None): *Update a product*
+- [products.product_features_get](https://docs.stripe.com/api/features/delete)(product,
+  ending_before: ‘str’, expand: ‘str’, limit: ‘str’, starting_after:
+  ‘str’): *List all features attached to a product*
+- [products.product_features_post](https://docs.stripe.com/api/features/update)(product,
+  entitlement_feature: str = None, expand: list = None): *Attach a
+  feature to a product*
+- [products.product_features_id_delete](https://docs.stripe.com/api/features/delete)(product,
+  id): *Remove a feature from a product*
+- [products.product_features_id_get](https://docs.stripe.com/api/features/delete)(product,
+  id, expand: ‘str’): *Retrieve a product_feature*
+
+``` python
+products = pages(sapi.products.get, limit=10)
+len(products), products[0]
+```
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+
+    (
+        650,
+        {
+            'id': 'prod_ScUPzNzla8KDC6',
+            'object': 'product',
+            'active': True,
+            'attributes': [],
+            'created': 1751657895,
+            'default_price': None,
+            'description': None,
+            'images': [],
+            'livemode': False,
+            'marketing_features': [],
+            'metadata': {},
+            'name': 'New Product',
+            'package_dimensions': None,
+            'shippable': None,
+            'statement_descriptor': None,
+            'tax_code': None,
+            'type': 'service',
+            'unit_label': None,
+            'updated': 1751657895,
+            'url': None
+        }
+    )
+
+The pagination utilities work with any Stripe resource that supports
+pagination:
+
+- **[`paged()`](https://AnswerDotAI.github.io/faststripe/page.html#paged)**:
+  Creates a paged generator for a resource’s API
+- **[`pages()`](https://AnswerDotAI.github.io/faststripe/page.html#pages)**:
+  Iterator that automatically fetches all pages and returns all items
+  returned in those pages
+
+This makes it easy to process large datasets without manually handling
+pagination tokens.
