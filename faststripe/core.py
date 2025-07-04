@@ -84,7 +84,7 @@ class _OAPIVerb(_OAPIObj):
         return f'[{self.res}.{self.name}]({self.doc_url}){self.__signature__}: *{self.summary}*'
     __repr__ = _repr_markdown_
 
-# %% ../nbs/01_core.ipynb 20
+# %% ../nbs/01_core.ipynb 21
 class _OAPIVerbGroup(_OAPIObj):
     def __init__(self, name, verbs):
         self.name,self.verbs = name,verbs
@@ -92,7 +92,7 @@ class _OAPIVerbGroup(_OAPIObj):
     def __str__(self): return "\n".join(str(v) for v in self.verbs)
     def _repr_markdown_(self): return "\n".join(f'- {v._repr_markdown_()}' for v in self.verbs)
 
-# %% ../nbs/01_core.ipynb 23
+# %% ../nbs/01_core.ipynb 24
 class StripeApi:
     def __init__(self, api_key=None, base_url=stripe_api_url):
         self.api_key,self.base_url = api_key,base_url
@@ -120,20 +120,20 @@ class StripeApi:
         a,b = k if isinstance(k,tuple) else (k,'GET')
         return self.func_dict[f'{a}:{b.upper()}']
 
-# %% ../nbs/01_core.ipynb 41
+# %% ../nbs/01_core.ipynb 42
 @patch
 def find_product(self:StripeApi, name: str):
     'Find a product by name'
     prods = L(self.products.get().data)
     return first(prods, lambda p: p.name == name)
 
-# %% ../nbs/01_core.ipynb 43
+# %% ../nbs/01_core.ipynb 44
 @patch
 def find_prices(self:StripeApi, product_id: str):
     'Find all prices associated with a product id'
     return L(self.prices.get().data).filter(lambda p: p.product == product_id)
 
-# %% ../nbs/01_core.ipynb 45
+# %% ../nbs/01_core.ipynb 46
 @patch
 def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', recurring=None, description=None):
     "Create a product and price if they don't exist"
@@ -145,7 +145,7 @@ def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', r
     price = first(self.find_prices(prod.id)) or self.prices.post(**price_params)
     return prod, price
 
-# %% ../nbs/01_core.ipynb 48
+# %% ../nbs/01_core.ipynb 49
 @patch
 def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', quantity=1, **kw):
     'Create a simple one-time payment checkout'
@@ -153,7 +153,7 @@ def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, ca
     return self.checkout.sessions_post(mode='payment', line_items=[dict(price=price.id, quantity=quantity)],
                                        automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kw)
 
-# %% ../nbs/01_core.ipynb 51
+# %% ../nbs/01_core.ipynb 52
 @patch
 def subscription(self:StripeApi, product_name, amount_cents, success_url, cancel_url,
                  currency='usd', interval='month', **kw):
