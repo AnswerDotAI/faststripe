@@ -2,7 +2,9 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_core.ipynb
+      - 00_spec.ipynb
+      - 01_core.ipynb
+      - 02_page.ipynb
       - section: explains
         contents:
           - explains/00_architecture.ipynb
@@ -11,8 +13,3 @@ website:
         contents:
           - how_to/00_one_time_payments.ipynb
           - how_to/01_subscriptions.ipynb
-          - how_to/02_customer_management.ipynb
-          - how_to/03_webhooks.ipynb
-      - section: reference
-        contents:
-          - reference/00_api_reference.ipynb
