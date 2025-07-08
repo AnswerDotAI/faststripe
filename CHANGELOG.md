@@ -2,6 +2,17 @@
 
 <!-- do not remove -->
 
+## 2025.06.30.0
+
+### New Features
+
+- refactor faststripe to use features from ghapi ([#9](https://github.com/AnswerDotAI/faststripe/issues/9))
+
+- add llms.txt ([#7](https://github.com/AnswerDotAI/faststripe/issues/7))
+
+- allow users to set quantity for one-time payments ([#6](https://github.com/AnswerDotAI/faststripe/issues/6))
+
+
 ## 2025.05.28.1
 
 ### New Features
