@@ -7,7 +7,7 @@
 
 Before starting this tutorial, you’ll need:
 
-- Python 3.8 or higher installed
+- Python 3.9 or higher installed
 - A Stripe account (sign up at [stripe.com](https://stripe.com))
 - Your Stripe test API keys from the [Stripe
   Dashboard](https://dashboard.stripe.com/test/apikeys)
