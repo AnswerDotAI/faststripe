@@ -75,7 +75,11 @@ from faststripe.core import StripeApi
 import os
 
 # Initialize with your API key from environment
-sapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])
+sapi = StripeApi('your-api-key')
+```
+
+``` python
+sapi.customers.post(
 ```
 
 ``` python
@@ -175,7 +179,6 @@ responses, making it easy to work with large requests.
 
 ``` python
 from faststripe.page import paged, pages
-
 
 for p in paged(sapi.customers.get, limit=5): break
 print(f"Got {len(p.data)} customers")
