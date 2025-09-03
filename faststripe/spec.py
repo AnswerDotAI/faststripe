@@ -85,8 +85,8 @@ def update_version():
     stripe_version = stripe_spec['info']['version'].split('.')[0].replace('-', '.')
 
     if cfg.d['version'] == stripe_version: return
-    cfg.d['version'] = stripe_version
+    cfg.d['version'] = stripe_version + '.0'
     cfg.save()
     eps = build_eps(stripe_openapi_url)
     (cfg.config_path/'faststripe/endpoints.py').write_text(f'eps = {pprint.pformat(eps, width=360)}')
-    print(f'Updated version to {stripe_version}')
+    print(f"Updated version to {cfg.d['version']}")
