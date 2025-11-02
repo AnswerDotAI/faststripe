@@ -12,6 +12,8 @@ from .spec import docs_url
 from inspect import Parameter, Signature
 
 import re
+from urllib.parse import quote
+
 
 # %% ../nbs/01_core.ipynb 4
 stripe_api_url = 'https://api.stripe.com'
