@@ -8,13 +8,13 @@ from fastcore.all import *
 
 import os, pprint, re
 
-# %% ../nbs/00_spec.ipynb 20
+# %% ../nbs/00_spec.ipynb 19
 _lu_type = dict(zip(
     'NA string object array boolean number integer'.split(),
     map(PrettyString,'object str dict list bool int int'.split())
 ))
 
-# %% ../nbs/00_spec.ipynb 22
+# %% ../nbs/00_spec.ipynb 21
 def _find_data(v, encoding='application/json'):
     'Finds the properties in a schema'
     schema = nested_idx(v, *f'requestBody content {encoding} schema'.split())
@@ -25,13 +25,13 @@ def _find_data(v, encoding='application/json'):
             if 'properties' in o: return o['properties']
     return {}
 
-# %% ../nbs/00_spec.ipynb 24
+# %% ../nbs/00_spec.ipynb 23
 def _deets(k,v):
     'Extracts the type and default value from a schema'
     return {'name': k, 'description': v.get('description', ''),
         'annotation': _lu_type[v.get('type', 'NA')], 'default' : v.get('default', None)}
 
-# %% ../nbs/00_spec.ipynb 28
+# %% ../nbs/00_spec.ipynb 27
 def _info(desc):
     # handle both json and form-urlencoded
     data = _find_data(desc, 'application/json') | _find_data(desc, 'application/x-www-form-urlencoded')
@@ -43,10 +43,10 @@ def _info(desc):
     return {'data': data, 'op_id': desc.get('operationId',''),
             'qparams': qparams, 'summary': desc.get('summary','')}
 
-# %% ../nbs/00_spec.ipynb 31
+# %% ../nbs/00_spec.ipynb 30
 docs_url = 'https://docs.stripe.com/api'
 
-# %% ../nbs/00_spec.ipynb 32
+# %% ../nbs/00_spec.ipynb 31
 def _slug(has_pparams, is_plural, verb):
     'Return the slug for a verb'
     match (has_pparams, is_plural, verb):
@@ -56,7 +56,7 @@ def _slug(has_pparams, is_plural, verb):
         case (False, _, 'post'): return 'create'
         case _: return 'delete'
 
-# %% ../nbs/00_spec.ipynb 33
+# %% ../nbs/00_spec.ipynb 32
 pat = r'/\{[^}]+\}'
 def _durl(path, verb):
     'Return the doc url for a path and verb if it exists else None'
@@ -68,7 +68,7 @@ def _durl(path, verb):
     slug = _slug(has_pparams, is_plural, verb)
     return f'{docs_url}/{res}/{slug}'
 
-# %% ../nbs/00_spec.ipynb 35
+# %% ../nbs/00_spec.ipynb 34
 def build_eps(url):
     "Build module metadata.py from an Open API spec and optionally filter by a path `pre`"
     spec = urlsend(url, 'GET', return_json=True)
@@ -76,7 +76,7 @@ def build_eps(url):
               for p, vs in spec['paths'].items() for v, desc in vs.items()]
     return _funcs
 
-# %% ../nbs/00_spec.ipynb 37
+# %% ../nbs/00_spec.ipynb 36
 @call_parse
 def update_version():
     'Update the version to the latest version of the Stripe API and the endpoints file.'
