@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2025.11.17.1
+
+### New Features
+
+- Add default key names ([#11](https://github.com/AnswerDotAI/faststripe/issues/11))
+
+
 ## 2025.11.17.0
 
 - update stripe
@@ -17,19 +24,12 @@
 - update stripe
 
 
-## 2025.07.30.0
-
-
-
-
 ## 2025.06.30.0
 
 ### New Features
 
 - refactor faststripe to use features from ghapi ([#9](https://github.com/AnswerDotAI/faststripe/issues/9))
-
 - add llms.txt ([#7](https://github.com/AnswerDotAI/faststripe/issues/7))
-
 - allow users to set quantity for one-time payments ([#6](https://github.com/AnswerDotAI/faststripe/issues/6))
 
 
