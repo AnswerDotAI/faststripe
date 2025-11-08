@@ -10,6 +10,7 @@ from fastcore.all import *
 from .endpoints import eps
 from .spec import docs_url
 from inspect import Parameter, Signature
+from urllib.parse import quote
 
 import re
 
@@ -95,6 +96,7 @@ class _OAPIVerbGroup(_OAPIObj):
 # %% ../nbs/01_core.ipynb 24
 class StripeApi:
     def __init__(self, api_key=None, base_url=stripe_api_url):
+        if not api_key: api_key = os.getenv('STRIPE_SECRET_KEY', os.getenv('STRIPE_API_KEY'))
         self.api_key,self.base_url = api_key,base_url
         self.hdrs = {'Authorization': f'Bearer {self.api_key}'}
         verbs = L(eps).map(lambda x: _OAPIVerb(**x, url=base_url, hdrs=self.hdrs, client=self))
