@@ -13,6 +13,8 @@ from inspect import Parameter, Signature
 from urllib.parse import quote
 
 import re
+from urllib.parse import quote
+
 
 # %% ../nbs/01_core.ipynb 4
 stripe_api_url = 'https://api.stripe.com'
