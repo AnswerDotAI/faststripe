@@ -26,7 +26,7 @@ def _mk_param(name, **kwargs):
 def _mk_sig(req_args, opt_args, anno_args):
     'req_args are args inside paths such as {account}, opt_args are query params, anno_args are payload params'
     params =  [_mk_param(k) for k in req_args]
-    params += [_mk_param(**p) for p in opt_args + anno_args]
+    params += [_mk_param(**{'default': None} | p) for p in opt_args or anno_args]
     return Signature(params)
 
 # %% ../nbs/01_core.ipynb 10
@@ -125,6 +125,7 @@ class StripeApi:
 
 # %% ../nbs/01_core.ipynb 42
 @patch
+@delegates(StripeApi().products.get)
 def find_product(self:StripeApi, name: str, limit=100, **kwargs):
     'Find a product by name'
     prods = pages(self.products.get, limit=limit, **kwargs)
@@ -132,6 +133,7 @@ def find_product(self:StripeApi, name: str, limit=100, **kwargs):
 
 # %% ../nbs/01_core.ipynb 44
 @patch
+@delegates(StripeApi().prices.get)
 def find_prices(self:StripeApi, product_id: str, limit=100, **kwargs):
     'Find all prices associated with a product id'
     return pages(self.prices.get, limit=limit, **kwargs).filter(lambda p: p.product == product_id)
@@ -150,17 +152,19 @@ def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', r
 
 # %% ../nbs/01_core.ipynb 49
 @patch
-def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', quantity=1, **kw):
+@delegates(StripeApi().checkout.sessions_post)
+def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', quantity=1, **kwargs):
     'Create a simple one-time payment checkout'
     _, price = self.priced_product(product_name, amount_cents, currency)
     return self.checkout.sessions_post(mode='payment', line_items=[dict(price=price.id, quantity=quantity)],
-                                       automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kw)
+                                       automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kwargs)
 
 # %% ../nbs/01_core.ipynb 52
 @patch
+@delegates(StripeApi().checkout.sessions_post)
 def subscription(self:StripeApi, product_name, amount_cents, success_url, cancel_url,
-                 currency='usd', interval='month', **kw):
+                 currency='usd', interval='month', **kwargs):
     'Create a simple recurring subscription'
     _, price = self.priced_product(product_name, amount_cents, currency, recurring=dict(interval=interval))
     return self.checkout.sessions_post(mode='subscription', success_url=success_url, cancel_url=cancel_url,
-                                       line_items=[dict(price=price.id, quantity=1)], **kw)
+                                       line_items=[dict(price=price.id, quantity=1)], **kwargs)
