@@ -8,6 +8,7 @@ __all__ = ['stripe_api_url', 'names', 'op2nm', 'StripeApi']
 # %% ../nbs/01_core.ipynb 2
 from fastcore.all import *
 from .endpoints import eps
+from .page import *
 from .spec import docs_url
 from inspect import Parameter, Signature
 from urllib.parse import quote
@@ -124,16 +125,16 @@ class StripeApi:
 
 # %% ../nbs/01_core.ipynb 42
 @patch
-def find_product(self:StripeApi, name: str):
+def find_product(self:StripeApi, name: str, limit=100, **kwargs):
     'Find a product by name'
-    prods = L(self.products.get().data)
+    prods = pages(self.products.get, limit=limit, **kwargs)
     return first(prods, lambda p: p.name == name)
 
 # %% ../nbs/01_core.ipynb 44
 @patch
-def find_prices(self:StripeApi, product_id: str):
+def find_prices(self:StripeApi, product_id: str, limit=100, **kwargs):
     'Find all prices associated with a product id'
-    return L(self.prices.get().data).filter(lambda p: p.product == product_id)
+    return pages(self.prices.get, limit=limit, **kwargs).filter(lambda p: p.product == product_id)
 
 # %% ../nbs/01_core.ipynb 46
 @patch
