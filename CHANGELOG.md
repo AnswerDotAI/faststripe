@@ -2,6 +2,14 @@
 
 <!-- do not remove -->
 
+## 2025.11.17.3
+
+### New Features
+
+- Highlevel API uses pagination
+- Consolidated paged api into core module
+
+
 ## 2025.11.17.1
 
 ### New Features
