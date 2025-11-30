@@ -20,6 +20,7 @@ stripe_api_url = 'https://api.stripe.com'
 # %% ../nbs/01_core.ipynb 8
 def _mk_param(name, **kwargs):
     kwargs.pop('description', None)
+    if name == 'expand': kwargs['annotation'] = list
     return Parameter(name, kind=Parameter.POSITIONAL_OR_KEYWORD, **kwargs)
 
 def _mk_sig(req_args, opt_args, anno_args):
@@ -108,6 +109,7 @@ class StripeApi:
         headers = {**self.hdrs, **(headers or {})}
         if route:
             for k,v in route.items(): route[k] = quote(str(route[k]))
+        if query: query = _flatten_data(query)
         if data: data = _flatten_data(data)
         res, self.recv_hdrs = urlsend(self.base_url + '/' + path, verb, headers=headers, return_headers=True,
                                       route=route or None, query=query or None, data=data or None, return_json=True,
