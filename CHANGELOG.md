@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2025.11.17.4
+
+### Bugs Squashed
+
+- List quary parameters not properly encoded
+
+
 ## 2025.11.17.3
 
 ### New Features
