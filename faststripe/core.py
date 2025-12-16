@@ -9,7 +9,7 @@ __all__ = ['stripe_api_url', 'names', 'op2nm', 'StripeApi', 'paged', 'pages']
 from fastcore.all import *
 from .endpoints import eps
 from .spec import docs_url
-from inspect import Parameter, Signature
+from inspect import Parameter, Signature, signature
 from urllib.parse import quote
 
 import re
@@ -171,9 +171,10 @@ def priced_product(self:StripeApi, product_name, amount_cents, currency='usd', r
 @delegates(StripeApi().checkout.sessions_post)
 def one_time_payment(self:StripeApi, product_name, amount_cents, success_url, cancel_url, currency='usd', quantity=1, **kwargs):
     'Create a simple one-time payment checkout'
+    automatic_tax = kwargs.pop('automatic_tax', {'enabled': True})
     _, price = self.priced_product(product_name, amount_cents, currency)
     return self.checkout.sessions_post(mode='payment', line_items=[dict(price=price.id, quantity=quantity)],
-                                       automatic_tax={'enabled': True}, success_url=success_url, cancel_url=cancel_url, **kwargs)
+                                       automatic_tax=automatic_tax, success_url=success_url, cancel_url=cancel_url, **kwargs)
 
 # %% ../nbs/01_core.ipynb 63
 @patch
