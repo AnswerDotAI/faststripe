@@ -1,11 +1,34 @@
 [build-system]
-requires = ["setuptools>=64.0"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name="faststripe"
+dynamic = ["version"]
+description = "Fastest way to use the Stripe API in python"
+readme = "README.md"
 requires-python=">=3.9"
-dynamic = [ "keywords", "description", "version", "dependencies", "optional-dependencies", "readme", "license", "authors", "classifiers", "entry-points", "scripts", "urls"]
+license = {text = "Apache-2.0"}
+authors = [{name = "ncoop57", email = "nathanacooper@proton.me"}]
+keywords = ['nbdev', 'jupyter', 'notebook', 'python']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = []
 
-[tool.uv]
-cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]
+[project.urls]
+Repository = "https://github.com/AnswerDotAI/faststripe"
+Documentation = "https://AnswerDotAI.github.io/faststripe"
+
+[project.entry-points.nbdev]
+faststripe = "faststripe._modidx:d"
+
+[tool.setuptools.dynamic]
+version = {attr = "faststripe.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["faststripe"]
+
+[tool.nbdev]
+custom_sidebar = false
