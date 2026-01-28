@@ -24,8 +24,14 @@ Documentation = "https://AnswerDotAI.github.io/faststripe"
 [project.entry-points.nbdev]
 faststripe = "faststripe._modidx:d"
 
+[project.scripts]
+faststripe_update=faststripe.spec:update_version
+
 [tool.setuptools.dynamic]
 version = {attr = "faststripe.__version__"}
+
+[project.scripts]
+faststripe_update=faststripe.spec:update_version
 
 [tool.setuptools.packages.find]
 include = ["faststripe"]
