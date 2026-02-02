@@ -5,6 +5,7 @@ __all__ = ['docs_url', 'pat', 'build_eps', 'update_version']
 
 # %% ../nbs/00_spec.ipynb #4ea88bd2
 from fastcore.all import *
+from nbdev.config import set_version, get_config
 
 import os, pprint, re
 
@@ -76,17 +77,16 @@ def build_eps(url):
               for p, vs in spec['paths'].items() for v, desc in vs.items()]
     return _funcs
 
-# %% ../nbs/00_spec.ipynb #6d4a7829
+# %% ../nbs/00_spec.ipynb #0af7536e
 @call_parse
 def update_version():
     'Update the version to the latest version of the Stripe API and the endpoints file.'
-    cfg = Config.find("settings.ini")
     stripe_spec = urlsend(stripe_openapi_url, 'GET', return_json=True)
     stripe_version = stripe_spec['info']['version'].split('.')[0].replace('-', '.')
 
-    if cfg.d['version'] == stripe_version: return
-    cfg.d['version'] = stripe_version + '.0'
-    cfg.save()
+    cfg = get_config()
+    if cfg.version.rsplit('.', 1)[0] == stripe_version: return
+    set_version(cfg.lib_path, stripe_version + '.0')
     eps = build_eps(stripe_openapi_url)
     (cfg.config_path/'faststripe/endpoints.py').write_text(f'eps = {pprint.pformat(eps, width=360)}')
-    print(f"Updated version to {cfg.d['version']}")
+    print(f"Updated version to {get_config().version}")
