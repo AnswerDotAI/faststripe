@@ -2,6 +2,11 @@
 
 <!-- do not remove -->
 
+## 2026.01.28.1
+
+- add missing dep
+
+
 ## 2026.01.28.0
 
 - update stripe
