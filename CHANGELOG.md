@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2026.01.28.2
+
+### New Features
+
+- Add StripeApiAsync ([#13](https://github.com/AnswerDotAI/faststripe/issues/13))
+
+
 ## 2026.01.28.1
 
 - add missing dep
