@@ -12,10 +12,7 @@ license = {text = "Apache-2.0"}
 authors = [{name = "ncoop57", email = "nathanacooper@proton.me"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python']
 classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
-dependencies = [
-    'fastcore',
-    "nbdev>=3",
-]
+dependencies = [ 'fastcore', 'httpx' ]
 
 [project.urls]
 Repository = "https://github.com/AnswerDotAI/faststripe"
@@ -25,7 +22,7 @@ Documentation = "https://AnswerDotAI.github.io/faststripe"
 faststripe = "faststripe._modidx:d"
 
 [project.optional-dependencies]
-dev = ['llms-txt']
+dev = ['llms-txt', 'nbdev>=3']
 
 
 [project.scripts]
