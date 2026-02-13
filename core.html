@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Fill in a module description here">
+
+<title>core – faststripe</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-baedc78cbf92349237790bf011c153e8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="core – faststripe">
+<meta property="og:description" content="Fill in a module description here">
+<meta property="og:site_name" content="faststripe">
+<meta name="twitter:title" content="core – faststripe">
+<meta name="twitter:description" content="Fill in a module description here">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./logo.svg" alt="" class="navbar-logo light-content">
+    <img src="./logo.svg" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://stripe.fast.ai"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/answerdotai/faststripe"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/answerdotai"> <i class="bi bi-twitter" role="img" aria-label="Answer.ai Twitter">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">core</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">How To</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./how_to/one_time_payments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to Accept One-Time Payments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./how_to/subscriptions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to Create Subscriptions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Explanations</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Reference</span></span>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#parsing-endpoints" id="toc-parsing-endpoints" class="nav-link active" data-scroll-target="#parsing-endpoints">Parsing Endpoints</a>
+  <ul class="collapse">
+  <li><a href="#op2nm" id="toc-op2nm" class="nav-link" data-scroll-target="#op2nm">op2nm</a></li>
+  </ul></li>
+  <li><a href="#stripeapi" id="toc-stripeapi" class="nav-link" data-scroll-target="#stripeapi">StripeApi</a>
+  <ul class="collapse">
+  <li><a href="#stripeapi-1" id="toc-stripeapi-1" class="nav-link" data-scroll-target="#stripeapi-1">StripeApi</a></li>
+  <li><a href="#stripeapiasync" id="toc-stripeapiasync" class="nav-link" data-scroll-target="#stripeapiasync">StripeApiAsync</a></li>
+  <li><a href="#stripeapi.__getitem__" id="toc-stripeapi.__getitem__" class="nav-link" data-scroll-target="#stripeapi.__getitem__">StripeApi.__getitem__</a></li>
+  </ul></li>
+  <li><a href="#pagination" id="toc-pagination" class="nav-link" data-scroll-target="#pagination">Pagination</a>
+  <ul class="collapse">
+  <li><a href="#paged" id="toc-paged" class="nav-link" data-scroll-target="#paged">paged</a></li>
+  <li><a href="#pages" id="toc-pages" class="nav-link" data-scroll-target="#pages">pages</a></li>
+  </ul></li>
+  <li><a href="#helpers" id="toc-helpers" class="nav-link" data-scroll-target="#helpers">Helpers</a>
+  <ul class="collapse">
+  <li><a href="#stripeapi.find_product" id="toc-stripeapi.find_product" class="nav-link" data-scroll-target="#stripeapi.find_product">StripeApi.find_product</a></li>
+  <li><a href="#stripeapi.find_prices" id="toc-stripeapi.find_prices" class="nav-link" data-scroll-target="#stripeapi.find_prices">StripeApi.find_prices</a></li>
+  <li><a href="#stripeapi.priced_product" id="toc-stripeapi.priced_product" class="nav-link" data-scroll-target="#stripeapi.priced_product">StripeApi.priced_product</a></li>
+  <li><a href="#stripeapi.one_time_payment" id="toc-stripeapi.one_time_payment" class="nav-link" data-scroll-target="#stripeapi.one_time_payment">StripeApi.one_time_payment</a></li>
+  <li><a href="#stripeapi.subscription" id="toc-stripeapi.subscription" class="nav-link" data-scroll-target="#stripeapi.subscription">StripeApi.subscription</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/AnswerDotAI/faststripe/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="core.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">core</h1>
+</div>
+
+<div>
+  <div class="description">
+    Fill in a module description here
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div id="18d69832" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>stripe_api_url <span class="op">=</span> <span class="st">'https://api.stripe.com'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="becc0c0d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ep <span class="op">=</span> first(eps, <span class="kw">lambda</span> x: x[<span class="st">'data'</span>] <span class="kw">and</span> <span class="bu">len</span>(x[<span class="st">'data'</span>]) <span class="op">&lt;</span> <span class="dv">3</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ep</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'data': [{'annotation': list,
+   'default': None,
+   'description': 'Specifies which fields in the response should be expanded.',
+   'name': 'expand'},
+  {'annotation': bool,
+   'default': None,
+   'description': "To request a new capability for an account, pass true. There can be a delay before the requested capability becomes active. If the capability has any activation requirements, the response includes them in the `requirements` arrays.\n\nIf a capability isn't permanent, you can remove it from the account by passing false. Some capabilities are permanent after they've been requested. Attempting to remove a permanent capability returns an error.",
+   'name': 'requested'}],
+ 'doc_url': 'https://docs.stripe.com/api/capabilities/update',
+ 'op_id': 'PostAccountsAccountCapabilitiesCapability',
+ 'path': '/v1/accounts/{account}/capabilities/{capability}',
+ 'qparams': [],
+ 'summary': 'Update an Account Capability',
+ 'verb': 'post'}</code></pre>
+</div>
+</div>
+<section id="parsing-endpoints" class="level2">
+<h2 class="anchored" data-anchor-id="parsing-endpoints">Parsing Endpoints</h2>
+<p>Now, with each of these descriptions, we can easily create a request that we want on the fly. However, to make it a little bit nicer to use in a library, we’ll go ahead and automatically generate classes with proper signatures and docstrings that are then easily accessible in any standard IDE.</p>
+<div id="892bc9e1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>path, <span class="op">*</span>_ <span class="op">=</span> partial_format(ep[<span class="st">'path'</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>req_args <span class="op">=</span> stringfmt_names(path)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>opt_args <span class="op">=</span> ep[<span class="st">'qparams'</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>anno_args <span class="op">=</span> ep[<span class="st">'data'</span>]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>_mk_sig(req_args, opt_args, anno_args)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Signature (account, capability, expand: list = None, requested: bool = None)&gt;</code></pre>
+</div>
+</div>
+<p>For organizing our APIs into resource groups, which the OpenAPI spec tends to do, we’re going to parse the operation ID.</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L33" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="op2nm" class="level3">
+<h3 class="anchored" data-anchor-id="op2nm">op2nm</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> op2nm(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    op_id</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Parse the operation ID to get the resource and name</em></p>
+<div id="a44e20e8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>op2nm(ep[<span class="st">'op_id'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('accounts', ['account', 'capabilities', 'capability', 'post'])</code></pre>
+</div>
+</div>
+<div id="a64e310b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>stripe_key <span class="op">=</span> os.environ[<span class="st">'STRIPE_SECRET_KEY'</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {<span class="st">'Authorization'</span>: <span class="ss">f'Bearer </span><span class="sc">{</span>stripe_key<span class="sc">}</span><span class="ss">'</span>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With this, we can now construct a entire OpenAPI verb with proper documentation and nice repr inside Jupyter environments!</p>
+<div id="4e3275b0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> _OAPIVerb(url<span class="op">=</span>stripe_api_url, hdrs<span class="op">=</span>headers, client<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>eps[<span class="dv">0</span>])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>v</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><a href="https://docs.stripe.com/api/accounts/retrieve">account.get</a>(expand: list = None): <em>Retrieve account</em></p>
+</div>
+</div>
+<p>Each endpoint includes a direct link to its documentation page. Due to Stripe’s API organization, some links (like checkout endpoints) may return 404s, but most core endpoints link correctly to their documentation when you need additional context.</p>
+<div id="3a6d5844" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>v?</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get(expand: <span class="bu">list</span> <span class="op">=</span> <span class="va">None</span>)(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    expand:<span class="bu">list</span><span class="op">=</span><span class="va">None</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre><code>Retrieve account
+
+Parameters:
+    expand: Specifies which fields in the response should be expanded.</code></pre>
+<p><strong>Type:</strong> _OAPIVerb</p>
+</div>
+</div>
+<p>Let’s go ahead and group our verbs based on the resource they are apart of. We can setup a repr to make discoverability of operations you can perform easy.</p>
+<div id="2e9b3273" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>verbs <span class="op">=</span> L(eps).<span class="bu">map</span>(<span class="kw">lambda</span> x: _OAPIVerb(<span class="op">**</span>x, url<span class="op">=</span>stripe_api_url, hdrs<span class="op">=</span>headers, client<span class="op">=</span><span class="va">None</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>groups <span class="op">=</span> {k.replace(<span class="st">'-'</span>,<span class="st">'_'</span>): _OAPIVerbGroup(k,v) <span class="cf">for</span> k,v <span class="kw">in</span> groupby(verbs, <span class="st">'res'</span>).items()}</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>res, g <span class="op">=</span> first(groups.items())</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>g</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<ul>
+<li><a href="https://docs.stripe.com/api/accounts/retrieve">account.get</a>(expand: list = None): <em>Retrieve account</em></li>
+<li><a href="https://docs.stripe.com/api/account_links/create">account.links_post</a>(account: str = None, collect: str = None, collection_options: dict = None, expand: list = None, refresh_url: str = None, return_url: str = None, type: str = None): <em>Create an account link</em></li>
+<li><a href="https://docs.stripe.com/api/account_sessions/create">account.sessions_post</a>(account: str = None, components: dict = None, expand: list = None): <em>Create an Account Session</em></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="stripeapi" class="level2">
+<h2 class="anchored" data-anchor-id="stripeapi">StripeApi</h2>
+<p>Let’s go ahead and design a class since we need to store our API key and for use in the headers for each of these classes.</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L98" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="stripeapi-1" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi-1">StripeApi</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> StripeApi(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    api_key:NoneType<span class="op">=</span><span class="va">None</span>, base_url:<span class="bu">str</span><span class="op">=</span><span class="st">'https://api.stripe.com'</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L131" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stripeapiasync" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapiasync">StripeApiAsync</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> StripeApiAsync(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    api_key:NoneType<span class="op">=</span><span class="va">None</span>, base_url:<span class="bu">str</span><span class="op">=</span><span class="st">'https://api.stripe.com'</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<div id="1af9b1d7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>sapi <span class="op">=</span> StripeApi() <span class="co"># Uses `STRIPE_SECRET_KEY` env var by default</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sapi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<ul>
+<li><a href="https://docs.stripe.com/api/account">account</a></li>
+<li><a href="https://docs.stripe.com/api/accounts">accounts</a></li>
+<li><a href="https://docs.stripe.com/api/apple">apple</a></li>
+<li><a href="https://docs.stripe.com/api/application">application</a></li>
+<li><a href="https://docs.stripe.com/api/apps">apps</a></li>
+<li><a href="https://docs.stripe.com/api/balance">balance</a></li>
+<li><a href="https://docs.stripe.com/api/billing">billing</a></li>
+<li><a href="https://docs.stripe.com/api/charges">charges</a></li>
+<li><a href="https://docs.stripe.com/api/checkout">checkout</a></li>
+<li><a href="https://docs.stripe.com/api/climate">climate</a></li>
+<li><a href="https://docs.stripe.com/api/confirmation">confirmation</a></li>
+<li><a href="https://docs.stripe.com/api/country">country</a></li>
+<li><a href="https://docs.stripe.com/api/coupons">coupons</a></li>
+<li><a href="https://docs.stripe.com/api/credit">credit</a></li>
+<li><a href="https://docs.stripe.com/api/customer">customer</a></li>
+<li><a href="https://docs.stripe.com/api/customers">customers</a></li>
+<li><a href="https://docs.stripe.com/api/disputes">disputes</a></li>
+<li><a href="https://docs.stripe.com/api/entitlements">entitlements</a></li>
+<li><a href="https://docs.stripe.com/api/ephemeral">ephemeral</a></li>
+<li><a href="https://docs.stripe.com/api/events">events</a></li>
+<li><a href="https://docs.stripe.com/api/exchange">exchange</a></li>
+<li><a href="https://docs.stripe.com/api/external">external</a></li>
+<li><a href="https://docs.stripe.com/api/fabric">fabric</a></li>
+<li><a href="https://docs.stripe.com/api/file">file</a></li>
+<li><a href="https://docs.stripe.com/api/files">files</a></li>
+<li><a href="https://docs.stripe.com/api/financial">financial</a></li>
+<li><a href="https://docs.stripe.com/api/forwarding">forwarding</a></li>
+<li><a href="https://docs.stripe.com/api/identity">identity</a></li>
+<li><a href="https://docs.stripe.com/api/invoice">invoice</a></li>
+<li><a href="https://docs.stripe.com/api/invoiceitems">invoiceitems</a></li>
+<li><a href="https://docs.stripe.com/api/invoices">invoices</a></li>
+<li><a href="https://docs.stripe.com/api/issuing">issuing</a></li>
+<li><a href="https://docs.stripe.com/api/link">link</a></li>
+<li><a href="https://docs.stripe.com/api/linked">linked</a></li>
+<li><a href="https://docs.stripe.com/api/mandates">mandates</a></li>
+<li><a href="https://docs.stripe.com/api/payment">payment</a></li>
+<li><a href="https://docs.stripe.com/api/payouts">payouts</a></li>
+<li><a href="https://docs.stripe.com/api/plans">plans</a></li>
+<li><a href="https://docs.stripe.com/api/prices">prices</a></li>
+<li><a href="https://docs.stripe.com/api/products">products</a></li>
+<li><a href="https://docs.stripe.com/api/promotion">promotion</a></li>
+<li><a href="https://docs.stripe.com/api/quotes">quotes</a></li>
+<li><a href="https://docs.stripe.com/api/radar">radar</a></li>
+<li><a href="https://docs.stripe.com/api/refunds">refunds</a></li>
+<li><a href="https://docs.stripe.com/api/reporting">reporting</a></li>
+<li><a href="https://docs.stripe.com/api/reviews">reviews</a></li>
+<li><a href="https://docs.stripe.com/api/setup">setup</a></li>
+<li><a href="https://docs.stripe.com/api/shipping">shipping</a></li>
+<li><a href="https://docs.stripe.com/api/sigma">sigma</a></li>
+<li><a href="https://docs.stripe.com/api/sources">sources</a></li>
+<li><a href="https://docs.stripe.com/api/subscription">subscription</a></li>
+<li><a href="https://docs.stripe.com/api/subscriptions">subscriptions</a></li>
+<li><a href="https://docs.stripe.com/api/tax">tax</a></li>
+<li><a href="https://docs.stripe.com/api/terminal">terminal</a></li>
+<li><a href="https://docs.stripe.com/api/test">test</a></li>
+<li><a href="https://docs.stripe.com/api/tokens">tokens</a></li>
+<li><a href="https://docs.stripe.com/api/topups">topups</a></li>
+<li><a href="https://docs.stripe.com/api/transfers">transfers</a></li>
+<li><a href="https://docs.stripe.com/api/treasury">treasury</a></li>
+<li><a href="https://docs.stripe.com/api/webhook">webhook</a></li>
+</ul>
+</div>
+</div>
+<div id="23fb552f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sapi.account</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<ul>
+<li><a href="https://docs.stripe.com/api/accounts/retrieve">account.get</a>(expand: list = None): <em>Retrieve account</em></li>
+<li><a href="https://docs.stripe.com/api/account_links/create">account.links_post</a>(account: str = None, collect: str = None, collection_options: dict = None, expand: list = None, refresh_url: str = None, return_url: str = None, type: str = None): <em>Create an account link</em></li>
+<li><a href="https://docs.stripe.com/api/account_sessions/create">account.sessions_post</a>(account: str = None, components: dict = None, expand: list = None): <em>Create an Account Session</em></li>
+</ul>
+</div>
+</div>
+<div id="b5849a47" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sapi.account.get().keys()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>dict_keys(['id', 'object', 'business_profile', 'business_type', 'capabilities', 'charges_enabled', 'company', 'controller', 'country', 'default_currency', 'details_submitted', 'email', 'payouts_enabled', 'settings', 'type'])</code></pre>
+</div>
+</div>
+<p>You can also call <a href="https://AnswerDotAI.github.io/faststripe/core.html#stripeapi"><code>StripeApi</code></a> directly with the path, verb, parameters, headers, etc:</p>
+<div id="c0842ef8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>prod <span class="op">=</span> sapi(<span class="st">'/v1/products'</span>, <span class="st">'POST'</span>, data<span class="op">=</span><span class="bu">dict</span>(name<span class="op">=</span><span class="st">'Test Product'</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>prod.<span class="bu">id</span>, prod.name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('prod_Tx1xp1BieLA0US', 'Test Product')</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L125" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stripeapi.__getitem__" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi.__getitem__">StripeApi.__getitem__</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">__getitem__</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    k</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Lookup and call an endpoint by path and verb (which defaults to ‘GET’)</em></p>
+<p>You can access endpoints by indexing into the object. When using the API this way, you do not need to specify what type of parameter (route, query, or post data) is being used. This is, therefore, the same call as above:</p>
+<div id="a7250bf5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>prod <span class="op">=</span> sapi[<span class="st">'/v1/products'</span>](name<span class="op">=</span><span class="st">'Test Product'</span>) <span class="co"># defaults to GET</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>prod.data[<span class="dv">0</span>].<span class="bu">id</span>, prod.data[<span class="dv">0</span>].name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('prod_Tx1xp1BieLA0US', 'Test Product')</code></pre>
+</div>
+</div>
+<p>That is all we need in order to have a fully functional Python SDK that is compliant with the Stripe OpenAPI spec. Kind of insane that in under 100 lines of code, we can get this functionality, which in my opinion is in some respects even better than the official Stripe Python SDK for the simple fact that we can see the parameters that the functions take without looking up the API reference doc online.</p>
+<p>Let’s go ahead and try to build with this thing. The simplest payment system that you can have in Stripe is a one-time payment URL. Here is how we do this in our new API. First, we have to create a product and its price.</p>
+<div id="4fc24a42" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>prod <span class="op">=</span> sapi.products.post(name<span class="op">=</span><span class="st">'Test Product'</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>prod.<span class="bu">id</span>, prod.name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('prod_Tx1xOoz9nZNsJP', 'Test Product')</code></pre>
+</div>
+</div>
+<div id="8fd41293" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>price <span class="op">=</span> sapi.prices.post(product<span class="op">=</span>prod.<span class="bu">id</span>, unit_amount<span class="op">=</span><span class="dv">10_00</span>, currency<span class="op">=</span><span class="st">'usd'</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>price.<span class="bu">id</span>, price.unit_amount, price.currency</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('price_1Sz7ttKGhqIw9PXm6FYt5b9b', 1000, 'usd')</code></pre>
+</div>
+</div>
+<p>Use the async client to get async calls.</p>
+<div id="a0ad2c25" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>asapi <span class="op">=</span> StripeApiAsync()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="52a46ff9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>aprod <span class="op">=</span> <span class="cf">await</span> asapi.products.post(name<span class="op">=</span><span class="st">'Test Product'</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>aprod.<span class="bu">id</span>, aprod.name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('prod_Tx1xtPKLT157HW', 'Test Product')</code></pre>
+</div>
+</div>
+<p>Now we can create our checkout session with a mode of payment which means that it will only happen once and is not part of any sort of subscription.</p>
+<div id="9b1d7331" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>sapi.checkout</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<ul>
+<li><a href="https://docs.stripe.com/api/sessions/list">checkout.sessions_get</a>(created: ‘str’ = None, customer: ‘str’ = None, customer_details: ‘str’ = None, ending_before: ‘str’ = None, expand: list = None, limit: ‘str’ = None, payment_intent: ‘str’ = None, payment_link: ‘str’ = None, starting_after: ‘str’ = None, status: ‘str’ = None, subscription: ‘str’ = None): <em>List all Checkout Sessions</em></li>
+<li><a href="https://docs.stripe.com/api/sessions/create">checkout.sessions_post</a>(adaptive_pricing: dict = None, after_expiration: dict = None, allow_promotion_codes: bool = None, automatic_tax: dict = None, billing_address_collection: str = None, branding_settings: dict = None, cancel_url: str = None, client_reference_id: str = None, consent_collection: dict = None, currency: str = None, custom_fields: list = None, custom_text: dict = None, customer: str = None, customer_creation: str = None, customer_email: str = None, customer_update: dict = None, discounts: list = None, excluded_payment_method_types: list = None, expand: list = None, expires_at: int = None, invoice_creation: dict = None, line_items: list = None, locale: str = None, metadata: dict = None, mode: str = None, name_collection: dict = None, optional_items: list = None, origin_context: str = None, payment_intent_data: dict = None, payment_method_collection: str = None, payment_method_configuration: str = None, payment_method_data: dict = None, payment_method_options: dict = None, payment_method_types: list = None, permissions: dict = None, phone_number_collection: dict = None, redirect_on_completion: str = None, return_url: str = None, saved_payment_method_options: dict = None, setup_intent_data: dict = None, shipping_address_collection: dict = None, shipping_options: list = None, submit_type: str = None, subscription_data: dict = None, success_url: str = None, tax_id_collection: dict = None, ui_mode: str = None, wallet_options: dict = None): <em>Create a Checkout Session</em></li>
+<li><a href="https://docs.stripe.com/api/sessions/delete">checkout.sessions_session_get</a>(session, expand: list = None): <em>Retrieve a Checkout Session</em></li>
+<li><a href="https://docs.stripe.com/api/sessions/update">checkout.sessions_session_post</a>(session, collected_information: dict = None, expand: list = None, metadata: object = None, shipping_options: object = None): <em>Update a Checkout Session</em></li>
+<li><a href="https://docs.stripe.com/api/expires/update">checkout.sessions_session_expire_post</a>(session, expand: list = None): <em>Expire a Checkout Session</em></li>
+<li><a href="https://docs.stripe.com/api/line_items/delete">checkout.sessions_session_line_items_get</a>(session, ending_before: ‘str’ = None, expand: list = None, limit: ‘str’ = None, starting_after: ‘str’ = None): <em>Retrieve a Checkout Session’s line items</em></li>
+</ul>
+</div>
+</div>
+<div id="ff6343b2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>checkout <span class="op">=</span> sapi.checkout.sessions_post(mode<span class="op">=</span><span class="st">'payment'</span>, line_items<span class="op">=</span>[<span class="bu">dict</span>(price<span class="op">=</span>price.<span class="bu">id</span>, quantity<span class="op">=</span><span class="dv">1</span>)],</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                                       success_url<span class="op">=</span><span class="st">'https://localhost:5001/success'</span>, cancel_url<span class="op">=</span><span class="st">'https://localhost:5001/cancel'</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Payment link: </span><span class="sc">{</span>checkout<span class="sc">.</span>url[:<span class="dv">64</span>]<span class="sc">}</span><span class="ss">...'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Payment link: https://billing.answer.ai/c/pay/cs_test_a1Yg2hX9DHet8IhchVmvU1KG...</code></pre>
+</div>
+</div>
+<p>Let’s make this process even easier by add a higher level api ontop of our StripeApi.</p>
+</section>
+</section>
+<section id="pagination" class="level2">
+<h2 class="anchored" data-anchor-id="pagination">Pagination</h2>
+<p>First, let’s make it a little bit easier to iterate through existing objects like customers or products.</p>
+<p>The <a href="https://AnswerDotAI.github.io/faststripe/core.html#paged"><code>paged</code></a> function provides an iterator that automatically handles pagination for Stripe API list methods.</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L141" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="paged" class="level3">
+<h3 class="anchored" data-anchor-id="paged">paged</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> paged(</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    oper, args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Iterate through all pages of a Stripe API operation.</em></p>
+<div id="0b4a31e4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ps <span class="op">=</span> L(itertools.islice(paged(sapi.customers.get, limit<span class="op">=</span><span class="dv">2</span>), <span class="dv">2</span>))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>cs <span class="op">=</span> L(c <span class="cf">for</span> p <span class="kw">in</span> ps <span class="cf">for</span> c <span class="kw">in</span> p.data)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">len</span>(ps), <span class="dv">2</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">len</span>(cs), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <a href="https://AnswerDotAI.github.io/faststripe/core.html#pages"><code>pages</code></a> function retrieves all items from all pages and returns them as a single list.</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L151" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="pages" class="level3">
+<h3 class="anchored" data-anchor-id="pages">pages</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pages(</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    oper, args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Retrieve all items from all pages of a Stripe API operation.</em></p>
+<p>Let’s test the pagination with the <code>customers</code> endpoint.</p>
+<div id="01c5c973" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>customers <span class="op">=</span> pages(sapi.customers.get, limit<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(customers), customers[<span class="dv">0</span>].keys()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>(1341,
+ dict_keys(['id', 'object', 'address', 'balance', 'created', 'currency', 'customer_account', 'default_source', 'delinquent', 'description', 'discount', 'email', 'invoice_prefix', 'invoice_settings', 'livemode', 'metadata', 'name', 'next_invoice_sequence', 'phone', 'preferred_locales', 'shipping', 'tax_exempt', 'test_clock']))</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="helpers" class="level2">
+<h2 class="anchored" data-anchor-id="helpers">Helpers</h2>
+<p>Great, now let’s make it easier to find products and prices!</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L158" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="stripeapi.find_product" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi.find_product">StripeApi.find_product</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_product(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    name:<span class="bu">str</span>, limit:<span class="bu">int</span><span class="op">=</span><span class="dv">100</span>, active:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, created:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, ending_before:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, expand:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    ids:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, shippable:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, starting_after:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, url:<span class="bu">str</span><span class="op">=</span><span class="va">None</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Find a product by name</em></p>
+<div id="2a9dda1f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sapi.find_product(<span class="st">'Test Product'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>{ <span class="st">'active'</span>: <span class="va">True</span>,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">'attributes'</span>: [],</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">'created'</span>: <span class="dv">1770055285</span>,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">'default_price'</span>: {},</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">'description'</span>: {},</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">'id'</span>: <span class="st">'prod_TuFx0aa85l7sIr'</span>,</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">'images'</span>: [],</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">'livemode'</span>: <span class="va">False</span>,</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">'marketing_features'</span>: [],</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">'metadata'</span>: {},</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">'name'</span>: <span class="st">'Test Product'</span>,</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">'object'</span>: <span class="st">'product'</span>,</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">'package_dimensions'</span>: {},</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">'shippable'</span>: {},</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">'statement_descriptor'</span>: {},</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">'tax_code'</span>: {},</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">'type'</span>: <span class="st">'service'</span>,</span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">'unit_label'</span>: {},</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">'updated'</span>: <span class="dv">1770055285</span>,</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">'url'</span>: {}}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L166" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stripeapi.find_prices" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi.find_prices">StripeApi.find_prices</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_prices(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    product_id:<span class="bu">str</span>, limit:<span class="bu">int</span><span class="op">=</span><span class="dv">100</span>, active:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, created:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, currency:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, ending_before:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    expand:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, lookup_keys:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, product:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, recurring:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, starting_after:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span>:<span class="bu">str</span><span class="op">=</span><span class="va">None</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Find all prices associated with a product id</em></p>
+<div id="d2193fb9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>sapi.find_prices(sapi.find_product(<span class="st">'Test Product'</span>).<span class="bu">id</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'id': 'price_1SwRRBKGhqIw9PXmcbRkGznA', 'object': 'price', 'active': True, 'billing_scheme': 'per_unit', 'created': 1770055285, 'currency': 'usd', 'custom_unit_amount': {}, 'livemode': False, 'lookup_key': {}, 'metadata': {}, 'nickname': {}, 'product': 'prod_TuFx0aa85l7sIr', 'recurring': {}, 'tax_behavior': 'unspecified', 'tiers_mode': {}, 'transform_quantity': {}, 'type': 'one_time', 'unit_amount': 1000, 'unit_amount_decimal': '1000'}]</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L172" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stripeapi.priced_product" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi.priced_product">StripeApi.priced_product</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> priced_product(</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    product_name, amount_cents, currency:<span class="bu">str</span><span class="op">=</span><span class="st">'usd'</span>, recurring:NoneType<span class="op">=</span><span class="va">None</span>, description:NoneType<span class="op">=</span><span class="va">None</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Create a product and price if they don’t exist</em></p>
+<div id="1bac8761" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>prod, price <span class="op">=</span> sapi.priced_product(<span class="st">'Test Product'</span>, <span class="dv">10_00</span>, <span class="st">'usd'</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>prod.name, price.<span class="bu">id</span>, price.unit_amount</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>('Test Product', 'price_1SwRRBKGhqIw9PXmcbRkGznA', 1000)</code></pre>
+</div>
+</div>
+<p>Now we can automatically create a product or use an existing one when create a one time payment link.</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L185" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stripeapi.one_time_payment" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi.one_time_payment">StripeApi.one_time_payment</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> one_time_payment(</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    product_name, amount_cents, success_url, cancel_url, currency:<span class="bu">str</span><span class="op">=</span><span class="st">'usd'</span>, quantity:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    adaptive_pricing:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, after_expiration:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, allow_promotion_codes:<span class="bu">bool</span><span class="op">=</span><span class="va">None</span>, automatic_tax:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    billing_address_collection:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, branding_settings:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, client_reference_id:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    consent_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, custom_fields:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, custom_text:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, customer:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>    customer_account:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, customer_creation:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, customer_email:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, customer_update:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    discounts:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, excluded_payment_method_types:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, expand:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, expires_at:<span class="bu">int</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    invoice_creation:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, line_items:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, locale:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, metadata:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, mode:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    name_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, optional_items:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, origin_context:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, payment_intent_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    payment_method_collection:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, payment_method_configuration:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, payment_method_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>    payment_method_options:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, payment_method_types:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, permissions:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>    phone_number_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, redirect_on_completion:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, return_url:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>    saved_payment_method_options:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, setup_intent_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, shipping_address_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>    shipping_options:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, submit_type:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, subscription_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, tax_id_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>    ui_mode:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, wallet_options:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Create a simple one-time payment checkout</em></p>
+<div id="e8d7fac7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>checkout <span class="op">=</span> sapi.one_time_payment(<span class="st">'Test Product'</span>, <span class="dv">10_00</span>, <span class="st">'https://localhost:5001/success'</span>, <span class="st">'https://localhost:5001/cancel'</span>, <span class="st">'usd'</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Payment link: </span><span class="sc">{</span>checkout<span class="sc">.</span>url[:<span class="dv">64</span>]<span class="sc">}</span><span class="ss">...'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Payment link: https://billing.answer.ai/c/pay/cs_test_a1K2vLpP2I89Df5WdJ8Ks9p8...</code></pre>
+</div>
+</div>
+<p>Another common use case is subscriptions. Let’s go ahead and create a version that makes subscription creation just as easy.</p>
+<hr>
+<p><a href="https://github.com/AnswerDotAI/faststripe/blob/main/faststripe/core.py#L195" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stripeapi.subscription" class="level3">
+<h3 class="anchored" data-anchor-id="stripeapi.subscription">StripeApi.subscription</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> subscription(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    product_name, amount_cents, success_url, cancel_url, currency:<span class="bu">str</span><span class="op">=</span><span class="st">'usd'</span>, interval:<span class="bu">str</span><span class="op">=</span><span class="st">'month'</span>,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    adaptive_pricing:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, after_expiration:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, allow_promotion_codes:<span class="bu">bool</span><span class="op">=</span><span class="va">None</span>, automatic_tax:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    billing_address_collection:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, branding_settings:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, client_reference_id:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    consent_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, custom_fields:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, custom_text:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, customer:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    customer_account:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, customer_creation:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, customer_email:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, customer_update:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>    discounts:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, excluded_payment_method_types:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, expand:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, expires_at:<span class="bu">int</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>    invoice_creation:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, line_items:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, locale:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, metadata:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, mode:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>    name_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, optional_items:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, origin_context:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, payment_intent_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>    payment_method_collection:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, payment_method_configuration:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, payment_method_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>    payment_method_options:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, payment_method_types:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, permissions:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>    phone_number_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, redirect_on_completion:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, return_url:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>    saved_payment_method_options:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, setup_intent_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, shipping_address_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>    shipping_options:<span class="bu">list</span><span class="op">=</span><span class="va">None</span>, submit_type:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, subscription_data:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>, tax_id_collection:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>    ui_mode:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, wallet_options:<span class="bu">dict</span><span class="op">=</span><span class="va">None</span></span>
+<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Create a simple recurring subscription</em></p>
+<div id="2831bf83" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>sub_checkout <span class="op">=</span> sapi.subscription(<span class="st">'Test Subscription Product'</span>, <span class="dv">10_00</span>, <span class="st">'https://localhost:5001/success'</span>, <span class="st">'https://localhost:5001/cancel'</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Payment link: </span><span class="sc">{</span>sub_checkout<span class="sc">.</span>url[:<span class="dv">64</span>]<span class="sc">}</span><span class="ss">...'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Payment link: https://billing.answer.ai/c/pay/cs_test_a1pchuEPwFRZJE2yeH84ciAJ...</code></pre>
+</div>
+</div>
+<p><strong>Note:</strong> You’ll want to use Stripe’s webhook functionality for detecting payment and subscription events. To do so, you’ll utilize the Python Stripe SDK that the event actually came from stripe.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/AnswerDotAI\.github\.io\/faststripe");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AnswerDotAI/faststripe/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

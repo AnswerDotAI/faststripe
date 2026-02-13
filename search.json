@@ -1,0 +1,313 @@
+[
+  {
+    "objectID": "how_to/one_time_payments.html",
+    "href": "how_to/one_time_payments.html",
+    "title": "How to Accept One-Time Payments",
+    "section": "",
+    "text": "This guide shows you how to create one-time payment links using FastStripe’s simplified API.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#problem",
+    "href": "how_to/one_time_payments.html#problem",
+    "title": "How to Accept One-Time Payments",
+    "section": "Problem",
+    "text": "Problem\nYou want to accept a one-time payment for a product or service without dealing with the complexity of creating products, prices, and checkout sessions manually.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#solution",
+    "href": "how_to/one_time_payments.html#solution",
+    "title": "How to Accept One-Time Payments",
+    "section": "Solution",
+    "text": "Solution\nUse FastStripe’s one_time_payment() method which handles all the setup automatically.\n\nfrom faststripe.core import StripeApi\nimport os\n\n# Initialize the API\nsapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#basic-one-time-payment",
+    "href": "how_to/one_time_payments.html#basic-one-time-payment",
+    "title": "How to Accept One-Time Payments",
+    "section": "Basic one-time payment",
+    "text": "Basic one-time payment\n\n# Create a simple payment link\ncheckout = sapi.one_time_payment(\n    product_name='Digital Course',\n    amount_cents=49_99,  # $49.99\n    success_url='https://yoursite.com/success',\n    cancel_url='https://yoursite.com/cancel'\n)\n\nprint(f\"Payment URL: {checkout.url[:64]}...\")\n\nPayment URL: https://billing.answer.ai/c/pay/cs_test_a1cUOqAjwyxJpKtfksIpNViB...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#different-currencies",
+    "href": "how_to/one_time_payments.html#different-currencies",
+    "title": "How to Accept One-Time Payments",
+    "section": "Different currencies",
+    "text": "Different currencies\nFastStripe supports all currencies that Stripe accepts:\n\n# Euro payment\neur_checkout = sapi.one_time_payment(\n    product_name='European Product',\n    amount_cents=25_00,  # €25.00\n    success_url='https://yoursite.com/success',\n    cancel_url='https://yoursite.com/cancel',\n    currency='eur'\n)\n\nprint(f\"EUR Payment URL: {eur_checkout.url[:64]}...\")\n\nEUR Payment URL: https://billing.answer.ai/c/pay/cs_test_a1xhktl4eWXJwP1aCzuwtzBr...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#manual-approach",
+    "href": "how_to/one_time_payments.html#manual-approach",
+    "title": "How to Accept One-Time Payments",
+    "section": "Manual approach",
+    "text": "Manual approach\nIf you need more control, you can create products, prices, and checkout sessions manually:\n\n# Create product\nproduct = sapi.products.post(\n    name='Advanced Course',\n    description='Complete Python development course'\n)\n\n# Create price\nprice = sapi.prices.post(\n    product=product.id,\n    unit_amount=99_99,  # $99.99\n    currency='usd'\n)\n\n# Create checkout session\ncheckout = sapi.checkout.sessions_post(\n    mode='payment',\n    line_items=[{\n        'price': price.id,\n        'quantity': 1\n    }],\n    success_url='https://yoursite.com/success',\n    cancel_url='https://yoursite.com/cancel'\n)\n\nprint(f\"Manual checkout URL: {checkout.url[:64]}...\")\n\nManual checkout URL: https://billing.answer.ai/c/pay/cs_test_a1wddAo7iSKwVLKJJh69cTSd...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#tips",
+    "href": "how_to/one_time_payments.html#tips",
+    "title": "How to Accept One-Time Payments",
+    "section": "Tips",
+    "text": "Tips\n\nUse test mode (keys starting with sk_test_) during development\nFastStripe automatically creates products and prices if they don’t exist\nStore the checkout session ID for tracking payments\nUse webhooks to handle successful payments in your application",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "00_spec.html",
+    "href": "00_spec.html",
+    "title": "faststripe",
+    "section": "",
+    "text": "stripe_openapi_url = 'https://raw.githubusercontent.com/stripe/openapi/refs/heads/master/openapi/spec3.json'\nstripe_spec = urlsend(stripe_openapi_url, 'GET', return_json=True)\nstripe_spec.keys()\n\ndict_keys(['components', 'info', 'openapi', 'paths', 'security', 'servers'])\n\n\nThe OpenAPI spec describes how a particular REST API works. The most important part of this spec is the paths that are defined by a particular spec. This defines what you can do with a particular API and usually includes things like the description of endpoint, expected parameters, the description of the parameters, and a schema of what will be returned from a particular endpoint.\n\npath, verbs = first(stripe_spec['paths'].items())\npath, verbs.keys()\n\n('/v1/account', dict_keys(['get']))\n\n\n\nverbs['get'].keys()\n\ndict_keys(['description', 'operationId', 'parameters', 'requestBody', 'responses', 'summary'])\n\n\nAs we can see here, the account path has a single HTTP verb that we can use on it called GET. The verb + path is what we refer to as an endpoint. This endpoint allows us to get the account details for a stripe.\n\nstripe_api_url = 'https://api.stripe.com'\nep = stripe_api_url + path\nep\n\n'https://api.stripe.com/v1/account'\n\n\n\nstripe_key = os.environ['STRIPE_SECRET_KEY']\nheaders = {'Authorization': f'Bearer {stripe_key}'}\nresp = urlsend(ep, 'GET', headers=headers)\nresp.keys()\n\ndict_keys(['id', 'object', 'business_type', 'capabilities', 'charges_enabled', 'country', 'default_currency', 'details_submitted', 'payouts_enabled', 'settings', 'type'])\n\n\nSome of these endpoints will take parameters if they are GET verbs or request bodies. POST verbs. Here is an example for the GET customers endpoint\n\npath, verbs = first(stripe_spec['paths'].items(), lambda x: x[0] == '/v1/customers')\nverbs['get']['parameters'][0]\n\n{'description': 'Only return customers that were created during the given date interval.',\n 'explode': True,\n 'in': 'query',\n 'name': 'created',\n 'required': False,\n 'schema': {'anyOf': [{'properties': {'gt': {'type': 'integer'},\n     'gte': {'type': 'integer'},\n     'lt': {'type': 'integer'},\n     'lte': {'type': 'integer'}},\n    'title': 'range_query_specs',\n    'type': 'object'},\n   {'type': 'integer'}]},\n 'style': 'deepObject'}\n\n\nAnd here is one for a post\n\nfirst(nested_idx(verbs, *'post requestBody content application/x-www-form-urlencoded schema properties'.split()).items())\n\n('address',\n {'anyOf': [{'properties': {'city': {'maxLength': 5000, 'type': 'string'},\n     'country': {'maxLength': 5000, 'type': 'string'},\n     'line1': {'maxLength': 5000, 'type': 'string'},\n     'line2': {'maxLength': 5000, 'type': 'string'},\n     'postal_code': {'maxLength': 5000, 'type': 'string'},\n     'state': {'maxLength': 5000, 'type': 'string'}},\n    'title': 'optional_fields_customer_address',\n    'type': 'object'},\n   {'enum': [''], 'type': 'string'}],\n  'description': \"The customer's address. Learn about [country-specific requirements for calculating tax](https://docs.stripe.com/invoicing/taxes?dashboard-or-api=dashboard#set-up-customer).\"})\n\n\nDepending on the spec, the encoding might be json or form url encoded. For Stripe, form url encoded is used.\nFinally, parameters can be inside the path itself\n\npath, verbs = first(stripe_spec['paths'].items(), lambda x: '{' in x[0])\npath, verbs.keys()\n\n('/v1/accounts/{account}', dict_keys(['delete', 'get', 'post']))\n\n\nfastcore luckily has some pretty nifty helper functions to deal with path parameters\n\npath, *_ = partial_format(path)\nroute_ps = stringfmt_names(path)\nroute_ps\n\n['account']\n\n\nFor post parameters, we can get data type information that we can surface to developers.\n\n_lu_type\n\n{'NA': object,\n 'string': str,\n 'object': dict,\n 'array': list,\n 'boolean': bool,\n 'number': int,\n 'integer': int}\n\n\n\nd = first(_find_data(verbs['post'], 'application/x-www-form-urlencoded').items())\nd\n\n('account_token',\n {'description': 'An [account token](https://api.stripe.com#create_account_token), used to securely provide details to the account.',\n  'maxLength': 5000,\n  'type': 'string'})\n\n\n\ndeets = _deets(*d)\ndeets\n\n{'name': 'account_token',\n 'description': 'An [account token](https://api.stripe.com#create_account_token), used to securely provide details to the account.',\n 'annotation': str,\n 'default': None}\n\n\nWhile get requests can technically also have bodies, these are normally ignored by HTTP servers.\nThe data we care most about for interfacing with an OpenAPI spec are the data, operation id, query parameters, summary, and url. So, lets make a helper function to grab these tidbits\n\ninfo = _info(verbs['get'])\nfirst(info['data']), info['op_id'], first(info['qparams']), info['summary']\n\n(None,\n 'GetAccountsAccount',\n {'name': 'expand',\n  'description': 'Specifies which fields in the response should be expanded.',\n  'annotation': 'str'},\n 'Retrieve account')\n\n\n\ninfo = _info(verbs['post'])\nfirst(info['data']), info['op_id'], first(info['qparams']), info['summary']\n\n({'name': 'account_token',\n  'description': 'An [account token](https://api.stripe.com#create_account_token), used to securely provide details to the account.',\n  'annotation': str,\n  'default': None},\n 'PostAccountsAccount',\n None,\n 'Update an account')\n\n\n\n_durl(path, 'get')\n\n'https://docs.stripe.com/api/accounts/delete'\n\n\n\nsource\n\nbuild_eps\n\ndef build_eps(\n    url\n):\n\nBuild module metadata.py from an Open API spec and optionally filter by a path pre\n\neps = build_eps(stripe_openapi_url)\neps[0]\n\n{'path': '/v1/account',\n 'verb': 'get',\n 'data': [],\n 'op_id': 'GetAccount',\n 'qparams': [{'name': 'expand',\n   'description': 'Specifies which fields in the response should be expanded.',\n   'annotation': 'str'}],\n 'summary': 'Retrieve account',\n 'doc_url': 'https://docs.stripe.com/api/accounts/retrieve'}\n\n\n\nsource\n\n\nupdate_version\n\ndef update_version(\n    \n):\n\nUpdate the version to the latest version of the Stripe API and the endpoints file.\n\nupdate_version()"
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "core",
+    "section": "",
+    "text": "Exported source\nstripe_api_url = 'https://api.stripe.com'\nep = first(eps, lambda x: x['data'] and len(x['data']) &lt; 3)\nep\n\n{'data': [{'annotation': list,\n   'default': None,\n   'description': 'Specifies which fields in the response should be expanded.',\n   'name': 'expand'},\n  {'annotation': bool,\n   'default': None,\n   'description': \"To request a new capability for an account, pass true. There can be a delay before the requested capability becomes active. If the capability has any activation requirements, the response includes them in the `requirements` arrays.\\n\\nIf a capability isn't permanent, you can remove it from the account by passing false. Some capabilities are permanent after they've been requested. Attempting to remove a permanent capability returns an error.\",\n   'name': 'requested'}],\n 'doc_url': 'https://docs.stripe.com/api/capabilities/update',\n 'op_id': 'PostAccountsAccountCapabilitiesCapability',\n 'path': '/v1/accounts/{account}/capabilities/{capability}',\n 'qparams': [],\n 'summary': 'Update an Account Capability',\n 'verb': 'post'}"
+  },
+  {
+    "objectID": "core.html#parsing-endpoints",
+    "href": "core.html#parsing-endpoints",
+    "title": "core",
+    "section": "Parsing Endpoints",
+    "text": "Parsing Endpoints\nNow, with each of these descriptions, we can easily create a request that we want on the fly. However, to make it a little bit nicer to use in a library, we’ll go ahead and automatically generate classes with proper signatures and docstrings that are then easily accessible in any standard IDE.\n\npath, *_ = partial_format(ep['path'])\nreq_args = stringfmt_names(path)\nopt_args = ep['qparams']\nanno_args = ep['data']\n\n_mk_sig(req_args, opt_args, anno_args)\n\n&lt;Signature (account, capability, expand: list = None, requested: bool = None)&gt;\n\n\nFor organizing our APIs into resource groups, which the OpenAPI spec tends to do, we’re going to parse the operation ID.\n\nsource\n\nop2nm\n\ndef op2nm(\n    op_id\n):\n\nParse the operation ID to get the resource and name\n\nop2nm(ep['op_id'])\n\n('accounts', ['account', 'capabilities', 'capability', 'post'])\n\n\n\nstripe_key = os.environ['STRIPE_SECRET_KEY']\nheaders = {'Authorization': f'Bearer {stripe_key}'}\n\nWith this, we can now construct a entire OpenAPI verb with proper documentation and nice repr inside Jupyter environments!\n\nv = _OAPIVerb(url=stripe_api_url, hdrs=headers, client=None, **eps[0])\nv\n\naccount.get(expand: list = None): Retrieve account\n\n\nEach endpoint includes a direct link to its documentation page. Due to Stripe’s API organization, some links (like checkout endpoints) may return 404s, but most core endpoints link correctly to their documentation when you need additional context.\n\nv?\n\ndef get(expand: list = None)(\n    expand:list=None\n):\nRetrieve account\n\nParameters:\n    expand: Specifies which fields in the response should be expanded.\nType: _OAPIVerb\n\n\nLet’s go ahead and group our verbs based on the resource they are apart of. We can setup a repr to make discoverability of operations you can perform easy.\n\nverbs = L(eps).map(lambda x: _OAPIVerb(**x, url=stripe_api_url, hdrs=headers, client=None))\ngroups = {k.replace('-','_'): _OAPIVerbGroup(k,v) for k,v in groupby(verbs, 'res').items()}\nres, g = first(groups.items())\ng\n\n\naccount.get(expand: list = None): Retrieve account\naccount.links_post(account: str = None, collect: str = None, collection_options: dict = None, expand: list = None, refresh_url: str = None, return_url: str = None, type: str = None): Create an account link\naccount.sessions_post(account: str = None, components: dict = None, expand: list = None): Create an Account Session"
+  },
+  {
+    "objectID": "core.html#stripeapi",
+    "href": "core.html#stripeapi",
+    "title": "core",
+    "section": "StripeApi",
+    "text": "StripeApi\nLet’s go ahead and design a class since we need to store our API key and for use in the headers for each of these classes.\n\nsource\n\nStripeApi\n\ndef StripeApi(\n    api_key:NoneType=None, base_url:str='https://api.stripe.com'\n):\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsource\n\n\nStripeApiAsync\n\ndef StripeApiAsync(\n    api_key:NoneType=None, base_url:str='https://api.stripe.com'\n):\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsapi = StripeApi() # Uses `STRIPE_SECRET_KEY` env var by default\nsapi\n\n\naccount\naccounts\napple\napplication\napps\nbalance\nbilling\ncharges\ncheckout\nclimate\nconfirmation\ncountry\ncoupons\ncredit\ncustomer\ncustomers\ndisputes\nentitlements\nephemeral\nevents\nexchange\nexternal\nfabric\nfile\nfiles\nfinancial\nforwarding\nidentity\ninvoice\ninvoiceitems\ninvoices\nissuing\nlink\nlinked\nmandates\npayment\npayouts\nplans\nprices\nproducts\npromotion\nquotes\nradar\nrefunds\nreporting\nreviews\nsetup\nshipping\nsigma\nsources\nsubscription\nsubscriptions\ntax\nterminal\ntest\ntokens\ntopups\ntransfers\ntreasury\nwebhook\n\n\n\n\nsapi.account\n\n\naccount.get(expand: list = None): Retrieve account\naccount.links_post(account: str = None, collect: str = None, collection_options: dict = None, expand: list = None, refresh_url: str = None, return_url: str = None, type: str = None): Create an account link\naccount.sessions_post(account: str = None, components: dict = None, expand: list = None): Create an Account Session\n\n\n\n\nsapi.account.get().keys()\n\ndict_keys(['id', 'object', 'business_profile', 'business_type', 'capabilities', 'charges_enabled', 'company', 'controller', 'country', 'default_currency', 'details_submitted', 'email', 'payouts_enabled', 'settings', 'type'])\n\n\nYou can also call StripeApi directly with the path, verb, parameters, headers, etc:\n\nprod = sapi('/v1/products', 'POST', data=dict(name='Test Product'))\nprod.id, prod.name\n\n('prod_Tx1xp1BieLA0US', 'Test Product')\n\n\n\nsource\n\n\nStripeApi.__getitem__\n\ndef __getitem__(\n    k\n):\n\nLookup and call an endpoint by path and verb (which defaults to ‘GET’)\nYou can access endpoints by indexing into the object. When using the API this way, you do not need to specify what type of parameter (route, query, or post data) is being used. This is, therefore, the same call as above:\n\nprod = sapi['/v1/products'](name='Test Product') # defaults to GET\nprod.data[0].id, prod.data[0].name\n\n('prod_Tx1xp1BieLA0US', 'Test Product')\n\n\nThat is all we need in order to have a fully functional Python SDK that is compliant with the Stripe OpenAPI spec. Kind of insane that in under 100 lines of code, we can get this functionality, which in my opinion is in some respects even better than the official Stripe Python SDK for the simple fact that we can see the parameters that the functions take without looking up the API reference doc online.\nLet’s go ahead and try to build with this thing. The simplest payment system that you can have in Stripe is a one-time payment URL. Here is how we do this in our new API. First, we have to create a product and its price.\n\nprod = sapi.products.post(name='Test Product')\nprod.id, prod.name\n\n('prod_Tx1xOoz9nZNsJP', 'Test Product')\n\n\n\nprice = sapi.prices.post(product=prod.id, unit_amount=10_00, currency='usd')\nprice.id, price.unit_amount, price.currency\n\n('price_1Sz7ttKGhqIw9PXm6FYt5b9b', 1000, 'usd')\n\n\nUse the async client to get async calls.\n\nasapi = StripeApiAsync()\n\n\naprod = await asapi.products.post(name='Test Product')\naprod.id, aprod.name\n\n('prod_Tx1xtPKLT157HW', 'Test Product')\n\n\nNow we can create our checkout session with a mode of payment which means that it will only happen once and is not part of any sort of subscription.\n\nsapi.checkout\n\n\ncheckout.sessions_get(created: ‘str’ = None, customer: ‘str’ = None, customer_details: ‘str’ = None, ending_before: ‘str’ = None, expand: list = None, limit: ‘str’ = None, payment_intent: ‘str’ = None, payment_link: ‘str’ = None, starting_after: ‘str’ = None, status: ‘str’ = None, subscription: ‘str’ = None): List all Checkout Sessions\ncheckout.sessions_post(adaptive_pricing: dict = None, after_expiration: dict = None, allow_promotion_codes: bool = None, automatic_tax: dict = None, billing_address_collection: str = None, branding_settings: dict = None, cancel_url: str = None, client_reference_id: str = None, consent_collection: dict = None, currency: str = None, custom_fields: list = None, custom_text: dict = None, customer: str = None, customer_creation: str = None, customer_email: str = None, customer_update: dict = None, discounts: list = None, excluded_payment_method_types: list = None, expand: list = None, expires_at: int = None, invoice_creation: dict = None, line_items: list = None, locale: str = None, metadata: dict = None, mode: str = None, name_collection: dict = None, optional_items: list = None, origin_context: str = None, payment_intent_data: dict = None, payment_method_collection: str = None, payment_method_configuration: str = None, payment_method_data: dict = None, payment_method_options: dict = None, payment_method_types: list = None, permissions: dict = None, phone_number_collection: dict = None, redirect_on_completion: str = None, return_url: str = None, saved_payment_method_options: dict = None, setup_intent_data: dict = None, shipping_address_collection: dict = None, shipping_options: list = None, submit_type: str = None, subscription_data: dict = None, success_url: str = None, tax_id_collection: dict = None, ui_mode: str = None, wallet_options: dict = None): Create a Checkout Session\ncheckout.sessions_session_get(session, expand: list = None): Retrieve a Checkout Session\ncheckout.sessions_session_post(session, collected_information: dict = None, expand: list = None, metadata: object = None, shipping_options: object = None): Update a Checkout Session\ncheckout.sessions_session_expire_post(session, expand: list = None): Expire a Checkout Session\ncheckout.sessions_session_line_items_get(session, ending_before: ‘str’ = None, expand: list = None, limit: ‘str’ = None, starting_after: ‘str’ = None): Retrieve a Checkout Session’s line items\n\n\n\n\ncheckout = sapi.checkout.sessions_post(mode='payment', line_items=[dict(price=price.id, quantity=1)],\n                                       success_url='https://localhost:5001/success', cancel_url='https://localhost:5001/cancel')\nprint(f'Payment link: {checkout.url[:64]}...')\n\nPayment link: https://billing.answer.ai/c/pay/cs_test_a1Yg2hX9DHet8IhchVmvU1KG...\n\n\nLet’s make this process even easier by add a higher level api ontop of our StripeApi."
+  },
+  {
+    "objectID": "core.html#pagination",
+    "href": "core.html#pagination",
+    "title": "core",
+    "section": "Pagination",
+    "text": "Pagination\nFirst, let’s make it a little bit easier to iterate through existing objects like customers or products.\nThe paged function provides an iterator that automatically handles pagination for Stripe API list methods.\n\nsource\n\npaged\n\ndef paged(\n    oper, args:VAR_POSITIONAL, kwargs:VAR_KEYWORD\n):\n\nIterate through all pages of a Stripe API operation.\n\nps = L(itertools.islice(paged(sapi.customers.get, limit=2), 2))\ncs = L(c for p in ps for c in p.data)\ntest_eq(len(ps), 2)\ntest_eq(len(cs), 4)\n\nThe pages function retrieves all items from all pages and returns them as a single list.\n\nsource\n\n\npages\n\ndef pages(\n    oper, args:VAR_POSITIONAL, kwargs:VAR_KEYWORD\n):\n\nRetrieve all items from all pages of a Stripe API operation.\nLet’s test the pagination with the customers endpoint.\n\ncustomers = pages(sapi.customers.get, limit=100)\nlen(customers), customers[0].keys()\n\n(1341,\n dict_keys(['id', 'object', 'address', 'balance', 'created', 'currency', 'customer_account', 'default_source', 'delinquent', 'description', 'discount', 'email', 'invoice_prefix', 'invoice_settings', 'livemode', 'metadata', 'name', 'next_invoice_sequence', 'phone', 'preferred_locales', 'shipping', 'tax_exempt', 'test_clock']))"
+  },
+  {
+    "objectID": "core.html#helpers",
+    "href": "core.html#helpers",
+    "title": "core",
+    "section": "Helpers",
+    "text": "Helpers\nGreat, now let’s make it easier to find products and prices!\n\nsource\n\nStripeApi.find_product\n\ndef find_product(\n    name:str, limit:int=100, active:str=None, created:str=None, ending_before:str=None, expand:list=None,\n    ids:str=None, shippable:str=None, starting_after:str=None, url:str=None\n):\n\nFind a product by name\n\nsapi.find_product('Test Product')\n\n{ 'active': True,\n  'attributes': [],\n  'created': 1770055285,\n  'default_price': {},\n  'description': {},\n  'id': 'prod_TuFx0aa85l7sIr',\n  'images': [],\n  'livemode': False,\n  'marketing_features': [],\n  'metadata': {},\n  'name': 'Test Product',\n  'object': 'product',\n  'package_dimensions': {},\n  'shippable': {},\n  'statement_descriptor': {},\n  'tax_code': {},\n  'type': 'service',\n  'unit_label': {},\n  'updated': 1770055285,\n  'url': {}}\n\n\n\nsource\n\n\nStripeApi.find_prices\n\ndef find_prices(\n    product_id:str, limit:int=100, active:str=None, created:str=None, currency:str=None, ending_before:str=None,\n    expand:list=None, lookup_keys:str=None, product:str=None, recurring:str=None, starting_after:str=None,\n    type:str=None\n):\n\nFind all prices associated with a product id\n\nsapi.find_prices(sapi.find_product('Test Product').id)\n\n[{'id': 'price_1SwRRBKGhqIw9PXmcbRkGznA', 'object': 'price', 'active': True, 'billing_scheme': 'per_unit', 'created': 1770055285, 'currency': 'usd', 'custom_unit_amount': {}, 'livemode': False, 'lookup_key': {}, 'metadata': {}, 'nickname': {}, 'product': 'prod_TuFx0aa85l7sIr', 'recurring': {}, 'tax_behavior': 'unspecified', 'tiers_mode': {}, 'transform_quantity': {}, 'type': 'one_time', 'unit_amount': 1000, 'unit_amount_decimal': '1000'}]\n\n\n\nsource\n\n\nStripeApi.priced_product\n\ndef priced_product(\n    product_name, amount_cents, currency:str='usd', recurring:NoneType=None, description:NoneType=None\n):\n\nCreate a product and price if they don’t exist\n\nprod, price = sapi.priced_product('Test Product', 10_00, 'usd')\nprod.name, price.id, price.unit_amount\n\n('Test Product', 'price_1SwRRBKGhqIw9PXmcbRkGznA', 1000)\n\n\nNow we can automatically create a product or use an existing one when create a one time payment link.\n\nsource\n\n\nStripeApi.one_time_payment\n\ndef one_time_payment(\n    product_name, amount_cents, success_url, cancel_url, currency:str='usd', quantity:int=1,\n    adaptive_pricing:dict=None, after_expiration:dict=None, allow_promotion_codes:bool=None, automatic_tax:dict=None,\n    billing_address_collection:str=None, branding_settings:dict=None, client_reference_id:str=None,\n    consent_collection:dict=None, custom_fields:list=None, custom_text:dict=None, customer:str=None,\n    customer_account:str=None, customer_creation:str=None, customer_email:str=None, customer_update:dict=None,\n    discounts:list=None, excluded_payment_method_types:list=None, expand:list=None, expires_at:int=None,\n    invoice_creation:dict=None, line_items:list=None, locale:str=None, metadata:dict=None, mode:str=None,\n    name_collection:dict=None, optional_items:list=None, origin_context:str=None, payment_intent_data:dict=None,\n    payment_method_collection:str=None, payment_method_configuration:str=None, payment_method_data:dict=None,\n    payment_method_options:dict=None, payment_method_types:list=None, permissions:dict=None,\n    phone_number_collection:dict=None, redirect_on_completion:str=None, return_url:str=None,\n    saved_payment_method_options:dict=None, setup_intent_data:dict=None, shipping_address_collection:dict=None,\n    shipping_options:list=None, submit_type:str=None, subscription_data:dict=None, tax_id_collection:dict=None,\n    ui_mode:str=None, wallet_options:dict=None\n):\n\nCreate a simple one-time payment checkout\n\ncheckout = sapi.one_time_payment('Test Product', 10_00, 'https://localhost:5001/success', 'https://localhost:5001/cancel', 'usd')\nprint(f'Payment link: {checkout.url[:64]}...')\n\nPayment link: https://billing.answer.ai/c/pay/cs_test_a1K2vLpP2I89Df5WdJ8Ks9p8...\n\n\nAnother common use case is subscriptions. Let’s go ahead and create a version that makes subscription creation just as easy.\n\nsource\n\n\nStripeApi.subscription\n\ndef subscription(\n    product_name, amount_cents, success_url, cancel_url, currency:str='usd', interval:str='month',\n    adaptive_pricing:dict=None, after_expiration:dict=None, allow_promotion_codes:bool=None, automatic_tax:dict=None,\n    billing_address_collection:str=None, branding_settings:dict=None, client_reference_id:str=None,\n    consent_collection:dict=None, custom_fields:list=None, custom_text:dict=None, customer:str=None,\n    customer_account:str=None, customer_creation:str=None, customer_email:str=None, customer_update:dict=None,\n    discounts:list=None, excluded_payment_method_types:list=None, expand:list=None, expires_at:int=None,\n    invoice_creation:dict=None, line_items:list=None, locale:str=None, metadata:dict=None, mode:str=None,\n    name_collection:dict=None, optional_items:list=None, origin_context:str=None, payment_intent_data:dict=None,\n    payment_method_collection:str=None, payment_method_configuration:str=None, payment_method_data:dict=None,\n    payment_method_options:dict=None, payment_method_types:list=None, permissions:dict=None,\n    phone_number_collection:dict=None, redirect_on_completion:str=None, return_url:str=None,\n    saved_payment_method_options:dict=None, setup_intent_data:dict=None, shipping_address_collection:dict=None,\n    shipping_options:list=None, submit_type:str=None, subscription_data:dict=None, tax_id_collection:dict=None,\n    ui_mode:str=None, wallet_options:dict=None\n):\n\nCreate a simple recurring subscription\n\nsub_checkout = sapi.subscription('Test Subscription Product', 10_00, 'https://localhost:5001/success', 'https://localhost:5001/cancel')\nprint(f'Payment link: {sub_checkout.url[:64]}...')\n\nPayment link: https://billing.answer.ai/c/pay/cs_test_a1pchuEPwFRZJE2yeH84ciAJ...\n\n\nNote: You’ll want to use Stripe’s webhook functionality for detecting payment and subscription events. To do so, you’ll utilize the Python Stripe SDK that the event actually came from stripe."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "",
+    "text": "Before starting this tutorial, you’ll need:\n\nPython 3.9 or higher installed\nA Stripe account (sign up at stripe.com)\nYour Stripe test API keys from the Stripe Dashboard",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#prerequisites",
+    "href": "index.html#prerequisites",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "",
+    "text": "Before starting this tutorial, you’ll need:\n\nPython 3.9 or higher installed\nA Stripe account (sign up at stripe.com)\nYour Stripe test API keys from the Stripe Dashboard",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#why-faststripe",
+    "href": "index.html#why-faststripe",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Why FastStripe?",
+    "text": "Why FastStripe?\nFastStripe offers several advantages over the official Stripe Python SDK:\n\nSelf-documenting: See all available parameters with descriptions in your IDE\nSimplified workflows: High-level methods for common payment patterns\nLightweight: Minimal dependencies (just fastcore)\nConsistent API: HTTP verb-based methods (post, get) with full parameter visibility",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#step-1-installation",
+    "href": "index.html#step-1-installation",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Step 1: Installation",
+    "text": "Step 1: Installation\nFirst, install FastStripe using pip:\npip install faststripe\nOr install the latest development version:\npip install git+https://github.com/AnswerDotAI/faststripe.git",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#versioning",
+    "href": "index.html#versioning",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Versioning",
+    "text": "Versioning\nFastStripe versions follow Stripe’s API versioning scheme (e.g., 2025.05.28.x). Each FastStripe release is pinned to a specific Stripe API version, ensuring:\n\nStability: Your code won’t break when Stripe updates their API\nPredictability: Same behavior across all environments\n\nCompatibility: Choose the Stripe API version that works for your application\n\nWhen you install FastStripe, you get a specific snapshot of the Stripe API that’s been tested and validated. The minor version represents non-breaking changes we add such as better higher-level APIs.",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#step-2-set-up-your-api-key",
+    "href": "index.html#step-2-set-up-your-api-key",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Step 2: Set up your API key",
+    "text": "Step 2: Set up your API key\nFor this tutorial, you’ll use your Stripe test API key. Create a .env file in your project directory:\necho \"STRIPE_SECRET_KEY=sk_test_your_test_key_here\" &gt; .env\nThen load it in your Python environment:",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#step-3-initialize-faststripe",
+    "href": "index.html#step-3-initialize-faststripe",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Step 3: Initialize FastStripe",
+    "text": "Step 3: Initialize FastStripe\nNow let’s import FastStripe and initialize it with your API key:\n\nfrom faststripe.core import *\n\n# Initialize with your API key from environment\nsapi = StripeApi('your-api-key')\n\n\nsapi.customers.post\n\ncustomers.post(address: object = None, balance: int = None, business_name: object = None, cash_balance: dict = None, description: str = None, email: str = None, expand: list = None, individual_name: object = None, invoice_prefix: str = None, invoice_settings: dict = None, metadata: object = None, name: str = None, next_invoice_sequence: int = None, payment_method: str = None, phone: str = None, preferred_locales: list = None, shipping: object = None, source: str = None, tax: dict = None, tax_exempt: str = None, tax_id_data: list = None, test_clock: str = None): Create a customer\n\n\n\n# Create a customer\ncustomer = sapi.customers.post(email='user@example.com', name='John Doe')\nprint(customer.id, customer.email)\n\ncus_TuFzNNxCMjVmcw user@example.com\n\n\n\nSelf-Documenting API\nOne of FastStripe’s key advantages is that all methods include parameter documentation directly in your IDE. You can see what parameters are available without checking external docs:\n# Explore available methods and their parameters\nsapi.customers.post?\nSignature:     \nsapi.customers.post(\n    address: object = None,\n    balance: int = None,\n    cash_balance: dict = None,\n    description: str = None,\n    email: str = None,\n    ...\nIt also supports tab completion when filling in parameters!\n\n\nHigh-Level Convenience Methods\nFastStripe includes simplified methods for common payment workflows:\n\n# Create a one-time payment checkout session\ncheckout = sapi.one_time_payment(\n    product_name='My Product',\n    amount_cents=20_00,  # $20.00\n    success_url='https://localhost:8000/success',\n    cancel_url='https://localhost:8000/cancel'\n)\nprint(f\"Payment URL: {checkout.url[:64]}...\")\n\nPayment URL: https://billing.answer.ai/c/pay/cs_test_a1pzRLNdTHBkHW5IkgHHRKgX...\n\n\n\n# Create a subscription checkout session\nsubscription = sapi.subscription(\n    product_name='Monthly Plan',\n    amount_cents=9_99,  # $9.99/month\n    success_url='https://localhost:8000/success',\n    cancel_url='https://localhost:8000/cancel',\n    customer_email=customer.email\n)\nprint(f\"Subscription URL: {subscription.url[:64]}...\")\n\nSubscription URL: https://billing.answer.ai/c/pay/cs_test_a1qd9Z83fYA9SdquEKozlgWB...\n\n\n\n\nComplete API Coverage\nFastStripe provides access to the entire Stripe API through organized resource groups:\n\n# Access any Stripe resource with consistent patterns\nproduct = sapi.products.post(name='New Product')\nprint(f\"Created product: {product.name} with ID: {product.id}\")\n\nCreated product: New Product with ID: prod_TuG0pr2pvrb77d\n\n\n\n# Fetch existing resources\ncustomers = sapi.customers.get(limit=3)\nprint(f\"Found {len(customers.data)} customers\")\n\nFound 3 customers\n\n\n\n# All responses are AttrDict objects for easy dot notation access\npayment_intent = sapi.payment.intents_post(amount=1000, currency='usd')\nprint(f\"Payment intent status: {payment_intent.status}, amount: ${payment_intent.amount/100}\")\n\nPayment intent status: requires_payment_method, amount: $10.0\n\n\n\n\nPagination Support\nFastStripe includes built-in utilities for handling paginated API responses, making it easy to work with large requests.\n\nfor p in paged(sapi.customers.get, limit=5): break\nprint(f\"Got {len(p.data)} customers\")\nprint(f\"Has more pages: {p.has_more}\")\n\nGot 5 customers\nHas more pages: True\n\n\n\nsapi.products\n\n\nproducts.get(active: ‘str’ = None, created: ‘str’ = None, ending_before: ‘str’ = None, expand: list = None, ids: ‘str’ = None, limit: ‘str’ = None, shippable: ‘str’ = None, starting_after: ‘str’ = None, url: ‘str’ = None): List all products\nproducts.post(active: bool = None, default_price_data: dict = None, description: str = None, expand: list = None, id: str = None, images: list = None, marketing_features: list = None, metadata: dict = None, name: str = None, package_dimensions: dict = None, shippable: bool = None, statement_descriptor: str = None, tax_code: str = None, unit_label: str = None, url: str = None): Create a product\nproducts.search_get(expand: list = None, limit: ‘str’ = None, page: ‘str’ = None, query: ‘str’ = None): Search products\nproducts.id_delete(id): Delete a product\nproducts.id_get(id, expand: list = None): Retrieve a product\nproducts.id_post(id, active: bool = None, default_price: str = None, description: object = None, expand: list = None, images: object = None, marketing_features: object = None, metadata: object = None, name: str = None, package_dimensions: object = None, shippable: bool = None, statement_descriptor: str = None, tax_code: object = None, unit_label: object = None, url: object = None): Update a product\nproducts.product_features_get(product, ending_before: ‘str’ = None, expand: list = None, limit: ‘str’ = None, starting_after: ‘str’ = None): List all features attached to a product\nproducts.product_features_post(product, entitlement_feature: str = None, expand: list = None): Attach a feature to a product\nproducts.product_features_id_delete(product, id): Remove a feature from a product\nproducts.product_features_id_get(product, id, expand: list = None): Retrieve a product_feature\n\n\n\n\nproducts = pages(sapi.products.get, limit=10)\nlen(products), products[0]\n\n(932,\n {'id': 'prod_TuG0pr2pvrb77d',\n  'object': 'product',\n  'active': True,\n  'attributes': [],\n  'created': 1770055482,\n  'default_price': {},\n  'description': {},\n  'images': [],\n  'livemode': False,\n  'marketing_features': [],\n  'metadata': {},\n  'name': 'New Product',\n  'package_dimensions': {},\n  'shippable': {},\n  'statement_descriptor': {},\n  'tax_code': {},\n  'type': 'service',\n  'unit_label': {},\n  'updated': 1770055482,\n  'url': {}})\n\n\nThe pagination utilities work with any Stripe resource that supports pagination:\n\npaged(): Creates a paged generator for a resource’s API\npages(): Iterator that automatically fetches all pages and returns all items returned in those pages\n\nThis makes it easy to process large datasets without manually handling pagination tokens.",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html",
+    "href": "how_to/subscriptions.html",
+    "title": "How to Create Subscriptions",
+    "section": "",
+    "text": "This guide shows you how to create recurring subscription payments using FastStripe.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#problem",
+    "href": "how_to/subscriptions.html#problem",
+    "title": "How to Create Subscriptions",
+    "section": "Problem",
+    "text": "Problem\nYou want to charge customers on a recurring basis (monthly, yearly, etc.) for a service or product.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#solution",
+    "href": "how_to/subscriptions.html#solution",
+    "title": "How to Create Subscriptions",
+    "section": "Solution",
+    "text": "Solution\nUse FastStripe’s subscription() method which creates the necessary recurring price and checkout session.\n\nfrom faststripe.core import *\nimport os\n\nsapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#monthly-subscription",
+    "href": "how_to/subscriptions.html#monthly-subscription",
+    "title": "How to Create Subscriptions",
+    "section": "Monthly subscription",
+    "text": "Monthly subscription\n\n# Create a monthly subscription\nsubscription = sapi.subscription(\n    product_name='Pro Plan',\n    amount_cents=19_99,  # $19.99/month\n    success_url='https://yoursite.com/welcome',\n    cancel_url='https://yoursite.com/pricing',\n    interval='month'\n)\n\nprint(f\"Subscription URL: {subscription.url[:64]}...\")\n\nSubscription URL: https://billing.answer.ai/c/pay/cs_test_a1YQn5kS4oYiNldiazJRxtoT...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#annual-subscription-with-discount",
+    "href": "how_to/subscriptions.html#annual-subscription-with-discount",
+    "title": "How to Create Subscriptions",
+    "section": "Annual subscription with discount",
+    "text": "Annual subscription with discount\n\n# Create an annual subscription (typically discounted)\nannual_sub = sapi.subscription(\n    product_name='Pro Plan',\n    amount_cents=199_99,  # $199.99/year (save $39.89)\n    success_url='https://yoursite.com/welcome',\n    cancel_url='https://yoursite.com/pricing',\n    interval='year'\n)\n\nprint(f\"Annual subscription URL: {annual_sub.url[:64]}...\")\n\nAnnual subscription URL: https://billing.answer.ai/c/pay/cs_test_a1Icxv2IwvHVBtZa66JCp1qm...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#pre-fill-customer-email",
+    "href": "how_to/subscriptions.html#pre-fill-customer-email",
+    "title": "How to Create Subscriptions",
+    "section": "Pre-fill customer email",
+    "text": "Pre-fill customer email\n\n# Pre-fill customer email in checkout\nsubscription = sapi.subscription(\n    product_name='Pro Plan',\n    amount_cents=19_99,\n    success_url='https://yoursite.com/welcome',\n    cancel_url='https://yoursite.com/pricing',\n    customer_email='user@example.com'\n)\n\nprint(f\"Subscription with email: {subscription.url[:64]}...\")\n\nSubscription with email: https://billing.answer.ai/c/pay/cs_test_a1uSlojJSlUQMOJMXpPFK8Cy...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#manual-subscription-setup",
+    "href": "how_to/subscriptions.html#manual-subscription-setup",
+    "title": "How to Create Subscriptions",
+    "section": "Manual subscription setup",
+    "text": "Manual subscription setup\nFor more control over subscription features:\n\n# Create product\nproduct = sapi.products.post(\n    name='Enterprise Plan',\n    description='Full access to all features'\n)\n\n# Create recurring price\nprice = sapi.prices.post(\n    product=product.id,\n    unit_amount=99_99,  # $99.99\n    currency='usd',\n    recurring={\n        'interval': 'month',\n        'usage_type': 'licensed'  # per-seat billing\n    }\n)\n\n# Create subscription checkout\ncheckout = sapi.checkout.sessions_post(\n    mode='subscription',\n    line_items=[{\n        'price': price.id,\n        'quantity': 1\n    }],\n    success_url='https://yoursite.com/success?session_id={CHECKOUT_SESSION_ID}',\n    cancel_url='https://yoursite.com/cancel',\n    allow_promotion_codes=True,  # Enable promo codes\n    subscription_data={\n        'trial_period_days': 14  # 14-day free trial\n    }\n)\n\nprint(f\"Enterprise subscription: {checkout.url[:64]}...\")\n\nEnterprise subscription: https://billing.answer.ai/c/pay/cs_test_b14ZoLwpDsJuqFFV7AEu7jNO...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#managing-existing-subscriptions",
+    "href": "how_to/subscriptions.html#managing-existing-subscriptions",
+    "title": "How to Create Subscriptions",
+    "section": "Managing existing subscriptions",
+    "text": "Managing existing subscriptions\nRetrieve and modify existing subscriptions:\n\n# List all subscriptions\nsubscriptions = pages(sapi.subscriptions.get, limit=100)\nprint(f\"Found {len(subscriptions)} subscriptions\")\n\n# Get a specific subscription\nsub = subscriptions[0]\nprint(f\"Subscription {sub.id}: {sub.status}\")\n\nFound 181 subscriptions\nSubscription sub_1SwObZKGhqIw9PXmwQczCKzX: active",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#best-practices",
+    "href": "how_to/subscriptions.html#best-practices",
+    "title": "How to Create Subscriptions",
+    "section": "Best practices",
+    "text": "Best practices\n\nAlways use webhooks to handle subscription lifecycle events\nConsider offering free trials to increase conversions\nUse promotion codes for discounts and marketing campaigns\nSet up proper success/cancel URLs that match your user flow\nTest subscription flows thoroughly in test mode",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  }
+]

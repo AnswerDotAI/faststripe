@@ -1,0 +1,33 @@
+# faststripe
+
+FastStripe is a lightweight Python library that dynamically generates Stripe API methods from the OpenAPI specification. It provides a clean, Pythonic interface to Stripe's payment processing APIs while automatically staying up-to-date with the latest API changes.
+
+Here are some tips on using FastStripe:
+
+- **Simple initialization**: Create a `StripeApi` instance with your API key: `api = StripeApi(api_key="sk_...")`
+- **Organized endpoints**: Access endpoints by resource type (e.g., `api.customers.create()`, `api.products.fetch()`, `api.checkout_sessions.create()`)
+- **Automatic parameter flattening**: Pass nested dictionaries directly - FastStripe automatically flattens them to Stripe's expected format
+- **AttrDict responses**: All API responses are converted to AttrDict objects for convenient dot notation access (e.g., `customer.id`, `payment.status`)
+- **High-level convenience methods**: Use simplified methods like `api.one_time_payment()` and `api.subscription()` for common workflows
+- **Dynamic API updates**: The library fetches Stripe's latest OpenAPI spec at runtime, ensuring compatibility with new features
+- **Consistent method naming**: POST operations become `create()`, GET operations become `fetch()` for predictable method names
+- **Bearer authentication**: API key is automatically included in request headers
+- **Form-encoded requests**: All data is properly formatted for Stripe's form-encoding requirements
+- **Type hints**: Generated type stubs provide IDE support and better development experience
+- **Development workflow**: Use `faststripe_update` command to regenerate endpoints from latest Stripe API spec
+
+## Tutorials
+
+- [One-time Payments](https://stripe.fast.ai/how_to/one_time_payments.html.md): Create simple payment links and process one-time charges
+- [Subscriptions](https://stripe.fast.ai/how_to/subscriptions.html.md): Set up recurring billing and subscription management
+- [Customer Management](https://stripe.fast.ai/how_to/customer_management.html.md): Create and manage customer records
+- [Webhooks](https://stripe.fast.ai/how_to/webhooks.html.md): Handle Stripe webhook events in your application
+
+## Architecture & Implementation
+
+- [Architecture Overview](https://stripe.fast.ai/explains/architecture.html.md): Core design patterns and dynamic API generation
+- [OpenAPI Integration](https://stripe.fast.ai/explains/openapi_integration.html.md): How FastStripe uses Stripe's OpenAPI spec
+
+## API Reference
+
+- [Core API](https://stripe.fast.ai/reference/api_reference.html.md): Complete reference for all FastStripe classes and methods
