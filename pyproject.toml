@@ -35,4 +35,5 @@ version = {attr = "faststripe.__version__"}
 include = ["faststripe"]
 
 [tool.nbdev]
+allowed_cell_metadata_keys = ["solveit_ai"]
 custom_sidebar = false
