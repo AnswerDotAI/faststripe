@@ -7,7 +7,7 @@
 
 Before starting this tutorial, you’ll need:
 
-- Python 3.9 or higher installed
+- Python 3.10 or higher installed
 - A Stripe account (sign up at [stripe.com](https://stripe.com))
 - Your Stripe test API keys from the [Stripe
   Dashboard](https://dashboard.stripe.com/test/apikeys)
@@ -17,13 +17,14 @@ Before starting this tutorial, you’ll need:
 FastStripe offers several advantages over the official Stripe Python
 SDK:
 
-- **Self-documenting**: See all available parameters with descriptions
-  in your IDE
-- **Simplified workflows**: High-level methods for common payment
-  patterns
-- **Lightweight**: Minimal dependencies (just `fastcore`)
-- **Consistent API**: HTTP verb-based methods (`post`, `get`) with full
-  parameter visibility
+- **Self-documenting**: See available parameters with descriptions in
+  your IDE
+- **Generated from Stripe’s OpenAPI spec**: Endpoints are built from a
+  pinned Stripe API snapshot
+- **Lightweight**: Small runtime built on `fastcore`, `fastspec`, and
+  `httpx`
+- **Consistent API**: Nested Stripe resources use HTTP verb methods
+  (`post`, `get`) with visible parameters
 
 ## Step 1: Installation
 
@@ -54,41 +55,82 @@ When you install FastStripe, you get a specific snapshot of the Stripe
 API that’s been tested and validated. The minor version represents
 non-breaking changes we add such as better higher-level APIs.
 
-## Step 2: Set up your API key
+## Step 2: Get your API key
 
-For this tutorial, you’ll use your Stripe test API key. Create a `.env`
-file in your project directory:
+For this tutorial, use your Stripe test API key from the Stripe
+Dashboard. We’ll pass it explicitly with `api_key=` so the setup is
+visible in the code.
 
-``` bash
-echo "STRIPE_SECRET_KEY=sk_test_your_test_key_here" > .env
-```
-
-Then load it in your Python environment:
+Use a test key while following the tutorial. Test secret keys start with
+`sk_test_` and should still be treated as private.
 
 ## Step 3: Initialize FastStripe
 
 Now let’s import FastStripe and initialize it with your API key:
 
 ``` python
-from faststripe.core import StripeApi
+from faststripe.core import *
 
-import os
-
-# Initialize with your API key from environment
-sapi = StripeApi('your-api-key')
+# Initialize with your Stripe test API key
+sapi = StripeApi(api_key='sk_test_your_test_key_here')
 ```
 
 ``` python
-sapi.customers.post(
+sapi.v1.customers.post
 ```
+
+<div class="prose" markdown="1">
+
+Create a customer
+
+Parameters: - address (, optional): The customer’s address. Learn about
+[country-specific requirements for calculating
+tax](https://docs.stripe.com/invoicing/taxes?dashboard-or-api=dashboard#set-up-customer). -
+balance (int, optional): An integer amount in cents (or local
+equivalent) that represents the customer’s current balance, which affect
+the customer’s future invoices. A negative amount represents a credit
+that decreases the amount due on an invoice; a positive amount increases
+the amount due on an invoice. - business_name (str, optional): The
+customer’s business name. This may be up to *150 characters*. -
+cash_balance (dict, optional): Balance information and default balance
+settings for this customer. - description (str, optional): An arbitrary
+string that you can attach to a customer object. It is displayed
+alongside the customer in the dashboard. - email (str, optional):
+Customer’s email address. It’s displayed alongside the customer in your
+dashboard and can be useful for searching and tracking. This may be up
+to *512 characters*. - expand (list, optional): Specifies which fields
+in the response should be expanded. - individual_name (str, optional):
+The customer’s full name. This may be up to *150 characters*. -
+invoice_prefix (str, optional): The prefix for the customer used to
+generate unique invoice numbers. Must be 3–12 uppercase letters or
+numbers. - invoice_settings (dict, optional): Default invoice settings
+for this customer. - metadata (, optional): Set of [key-value
+pairs](https://docs.stripe.com/api/metadata) that you can attach to an
+object. This can be useful for storing additional information about the
+object in a structured format. Individual keys can be unset by posting
+an empty value to them. All keys can be unset by posting an empty value
+to `metadata`. - name (str, optional): The customer’s full name or
+business name. - next_invoice_sequence (int, optional): The sequence to
+be used on the customer’s next invoice. Defaults to 1. - payment_method
+(str, optional) - phone (str, optional): The customer’s phone number. -
+preferred_locales (list, optional): Customer’s preferred languages,
+ordered by preference. - shipping (, optional): The customer’s shipping
+information. Appears on invoices emailed to this customer. - source
+(str, optional) - tax (dict, optional): Tax details about the
+customer. - tax_exempt (str, optional): The customer’s tax exemption.
+One of `none`, `exempt`, or `reverse`. - tax_id_data (list, optional):
+The customer’s tax IDs. - test_clock (str, optional): ID of the test
+clock to attach to the customer.
+
+</div>
 
 ``` python
 # Create a customer
-customer = sapi.customers.post(email='user@example.com', name='John Doe')
+customer = await sapi.v1.customers.post(email='user@example.com', name='John Doe')
 print(customer.id, customer.email)
 ```
 
-    cus_ScUPG9yb5cPV6G user@example.com
+    cus_UXABX4zNYeDcJ9 user@example.com
 
 ### Self-Documenting API
 
@@ -98,67 +140,39 @@ available without checking external docs:
 
 ``` python
 # Explore available methods and their parameters
-sapi.customers.post?
+sapi.v1.customers.post?
 ```
 
-    Signature:     
-    sapi.customers.post(
-        address: object = None,
-        balance: int = None,
-        cash_balance: dict = None,
-        description: str = None,
-        email: str = None,
-        ...
+    def post(
+        address:Unset=UNSET, balance:int=UNSET, business_name:str=UNSET, cash_balance:dict=UNSET, description:str=UNSET,
+        email:str=UNSET, expand:list=UNSET, individual_name:str=UNSET, invoice_prefix:str=UNSET,
+        invoice_settings:dict=UNSET, metadata:Unset=UNSET, name:str=UNSET, next_invoice_sequence:int=UNSET,
+        payment_method:str=UNSET, phone:str=UNSET, preferred_locales:list=UNSET, shipping:Unset=UNSET, source:str=UNSET,
+        tax:dict=UNSET, tax_exempt:str=UNSET, tax_id_data:list=UNSET, test_clock:str=UNSET
+    ):
+
+    Create a customer
+
+    Parameters: ...
 
 It also supports tab completion when filling in parameters!
 
-### High-Level Convenience Methods
-
-FastStripe includes simplified methods for common payment workflows:
-
-``` python
-# Create a one-time payment checkout session
-checkout = sapi.one_time_payment(
-    product_name='My Product',
-    amount_cents=2000,  # $20.00
-    success_url='https://localhost:8000/success',
-    cancel_url='https://localhost:8000/cancel'
-)
-print(f"Payment URL: {checkout.url[:64]}...")
-```
-
-    Payment URL: https://billing.answer.ai/c/pay/cs_test_a107uQXcqI6W9iD09wOmVinc...
-
-``` python
-# Create a subscription checkout session
-subscription = sapi.subscription(
-    product_name='Monthly Plan',
-    amount_cents=999,  # $9.99/month
-    success_url='https://localhost:8000/success',
-    cancel_url='https://localhost:8000/cancel',
-    customer_email=customer.email
-)
-print(f"Subscription URL: {subscription.url[:64]}...")
-```
-
-    Subscription URL: https://billing.answer.ai/c/pay/cs_test_a1O4fjw1mgs11zkLGgHZTp6T...
-
 ### Complete API Coverage
 
-FastStripe provides access to the entire Stripe API through organized
-resource groups:
+FastStripe provides access to Stripe’s API through nested OpenAPI groups
+generated from the pinned Stripe spec:
 
 ``` python
 # Access any Stripe resource with consistent patterns
-product = sapi.products.post(name='New Product')
+product = await sapi.v1.products.post(name='New Product')
 print(f"Created product: {product.name} with ID: {product.id}")
 ```
 
-    Created product: New Product with ID: prod_ScUPzNzla8KDC6
+    Created product: New Product with ID: prod_UXAC1jJuFtyOx2
 
 ``` python
 # Fetch existing resources
-customers = sapi.customers.get(limit=3)
+customers = await sapi.v1.customers.get(limit=3)
 print(f"Found {len(customers.data)} customers")
 ```
 
@@ -166,7 +180,7 @@ print(f"Found {len(customers.data)} customers")
 
 ``` python
 # All responses are AttrDict objects for easy dot notation access
-payment_intent = sapi.payment.intents_post(amount=1000, currency='usd')
+payment_intent = await sapi.v1.payment_intents.post(amount=1000, currency='usd')
 print(f"Payment intent status: {payment_intent.status}, amount: ${payment_intent.amount/100}")
 ```
 
@@ -178,99 +192,52 @@ FastStripe includes built-in utilities for handling paginated API
 responses, making it easy to work with large requests.
 
 ``` python
-from faststripe.page import paged, pages
-
-for p in paged(sapi.customers.get, limit=5): break
-print(f"Got {len(p.data)} customers")
+async for p in paged(sapi.v1.coupons.get, limit=5): break
+print(f"Got {len(p.data)} coupons")
 print(f"Has more pages: {p.has_more}")
 ```
 
-    Got 5 customers
+    Got 5 coupons
     Has more pages: True
 
 ``` python
-sapi.products
+coupons = await pages(sapi.v1.coupons.get, limit=100)
+len(coupons), coupons[0]
 ```
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-- [products.get](https://docs.stripe.com/api/products/list)(active:
-  ‘str’, created: ‘str’, ending_before: ‘str’, expand: ‘str’, ids:
-  ‘str’, limit: ‘str’, shippable: ‘str’, starting_after: ‘str’, url:
-  ‘str’): *List all products*
-- [products.post](https://docs.stripe.com/api/products/create)(active:
-  bool = None, default_price_data: dict = None, description: str = None,
-  expand: list = None, id: str = None, images: list = None,
-  marketing_features: list = None, metadata: dict = None, name: str =
-  None, package_dimensions: dict = None, shippable: bool = None,
-  statement_descriptor: str = None, tax_code: str = None, unit_label:
-  str = None, url: str = None): *Create a product*
-- [products.search_get](https://docs.stripe.com/api/searchs/retrieve)(expand:
-  ‘str’, limit: ‘str’, page: ‘str’, query: ‘str’): *Search products*
-- [products.id_delete](https://docs.stripe.com/api/products/delete)(id):
-  *Delete a product*
-- [products.id_get](https://docs.stripe.com/api/products/delete)(id,
-  expand: ‘str’): *Retrieve a product*
-- [products.id_post](https://docs.stripe.com/api/products/update)(id,
-  active: bool = None, default_price: str = None, description: object =
-  None, expand: list = None, images: object = None, marketing_features:
-  object = None, metadata: object = None, name: str = None,
-  package_dimensions: object = None, shippable: bool = None,
-  statement_descriptor: str = None, tax_code: object = None, unit_label:
-  object = None, url: object = None): *Update a product*
-- [products.product_features_get](https://docs.stripe.com/api/features/delete)(product,
-  ending_before: ‘str’, expand: ‘str’, limit: ‘str’, starting_after:
-  ‘str’): *List all features attached to a product*
-- [products.product_features_post](https://docs.stripe.com/api/features/update)(product,
-  entitlement_feature: str = None, expand: list = None): *Attach a
-  feature to a product*
-- [products.product_features_id_delete](https://docs.stripe.com/api/features/delete)(product,
-  id): *Remove a feature from a product*
-- [products.product_features_id_get](https://docs.stripe.com/api/features/delete)(product,
-  id, expand: ‘str’): *Retrieve a product_feature*
-
-``` python
-products = pages(sapi.products.get, limit=10)
-len(products), products[0]
-```
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-
-    (
-        650,
-        {
-            'id': 'prod_ScUPzNzla8KDC6',
-            'object': 'product',
-            'active': True,
-            'attributes': [],
-            'created': 1751657895,
-            'default_price': None,
-            'description': None,
-            'images': [],
-            'livemode': False,
-            'marketing_features': [],
-            'metadata': {},
-            'name': 'New Product',
-            'package_dimensions': None,
-            'shippable': None,
-            'statement_descriptor': None,
-            'tax_code': None,
-            'type': 'service',
-            'unit_label': None,
-            'updated': 1751657895,
-            'url': None
-        }
-    )
+    (588, Coupon(id=ioULYkUY))
 
 The pagination utilities work with any Stripe resource that supports
 pagination:
 
-- **[`paged()`](https://AnswerDotAI.github.io/faststripe/page.html#paged)**:
-  Creates a paged generator for a resource’s API
-- **[`pages()`](https://AnswerDotAI.github.io/faststripe/page.html#pages)**:
-  Iterator that automatically fetches all pages and returns all items
-  returned in those pages
+- **[`paged()`](https://AnswerDotAI.github.io/faststripe/core.html#paged)**:
+  Async generator that yields each page from a resource API
+- **[`pages()`](https://AnswerDotAI.github.io/faststripe/core.html#pages)**:
+  Fetches all pages and returns the collected items
 
 This makes it easy to process large datasets without manually handling
 pagination tokens.
+
+## Handling Webhooks
+
+Stripe signs webhook payloads so your app can reject fake or modified
+events. FastStripe provided the `parse_webhook(req)` helper for this
+which returns a FastStripe Event object.
+
+In a webhook route, `parse_webhook()` verifies the signature before
+returning the event object:
+
+``` python
+# Example inside a FastHTML/FastAPI-style route
+@rt
+async def webhook(req):
+    'Handle incoming webhooks from stripe'
+    evt = await sapi.parse_webhook(req)
+    print(evt, evt.data)
+```
+
+For lower-level integrations, use
+[`verify_webhook()`](https://AnswerDotAI.github.io/faststripe/core.html#verify_webhook)
+directly with the raw payload, Stripe signature header, and webhook
+secret. `parse_webhook()` is usually the nicer path because it verifies
+the event and converts nested Stripe data into FastStripe objects.
