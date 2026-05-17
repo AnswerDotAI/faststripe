@@ -1,0 +1,317 @@
+[
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "core",
+    "section": "",
+    "text": "env_fn = Path('../.env')\nif env_fn.exists(): os.environ.update(parse_env(fn=env_fn))\nsource"
+  },
+  {
+    "objectID": "core.html#stripeapi",
+    "href": "core.html#stripeapi",
+    "title": "core",
+    "section": "StripeApi",
+    "text": "StripeApi\n\nsource\n\nStripeApi\n\ndef StripeApi(\n    api_key:NoneType=None, webhook_key:NoneType=None, publishable_key:NoneType=None, service_name:str='faststripe',\n    headers:NoneType=None, timeout:float=60.0\n):\n\nAsync client built from OpenAPI operation metadata.\n\nsource\n\n\nStripeTransport\n\ndef StripeTransport(\n    timeout:float=60.0, client:NoneType=None, base_headers:NoneType=None\n):\n\nThin async transport wrapper over httpx.\nCreate a StripeApi instance to get a generated async client for the Stripe API. By default it reads credentials from the environment, builds auth headers, creates a transport, and attaches endpoint groups such as v1 and v2.\n\nsapi = StripeApi()\nsapi.groups\n\n{'v1': &lt;fastspec.oapi.OpGroup&gt;,\n 'v2': &lt;fastspec.oapi.OpGroup&gt;}\n\n\nThe generated client mirrors Stripe’s URL structure with attributes. For example, sapi.v1.account.get() calls GET /v1/account, and the response comes back as a StripeObject with dot access.\n\nacct = await sapi.v1.account.get()\nacct\n\n\nAccount(id=acct_1Q4H44KGhqIw9PXm)\n\n\n\nYou also get nice error messages when things go wrong.\n\ntry:\n    await sapi.v1.prices.post(product='abc')\n    assert False, 'Should raise StripeError'\nexcept StripeError as e: print(e.msg, e.param, e.type)\n\nNo such product: 'abc' product invalid_request_error\n\n\nThe next few cells walk through a small real Stripe flow: create a test product, update it, attach a price, and use that price in a Checkout Session. These examples exercise both request encoding and response object conversion.\n\nprod = await sapi.v1.products.post(name='Test Product')\nprod.id, prod.name\n\n('prod_UWs27UXlTGYChz', 'Test Product')\n\n\n\nprod = await sapi.v1.products.id.post(id=prod.id, name='New')    # update\nprod.name\n\n'New'\n\n\n\nprice = await sapi.v1.prices.post(product=prod.id, unit_amount=10_00, currency='usd')\nprice.id, price.unit_amount, price.currency\n\n('price_1TXoIiKGhqIw9PXmy2XmL9tW', 1000, 'usd')\n\n\nNow we can create our checkout session with a mode of payment which means that it will only happen once and is not part of any sort of subscription.\n\ncheckout = await sapi.v1.checkout.sessions.post(mode='payment', line_items=[dict(price=price.id, quantity=1)],\n                                                success_url='https://localhost:5001/success', cancel_url='https://localhost:5001/cancel')\nprint(f'Payment link: {checkout.url[:64]}...')\n\nPayment link: https://billing.answer.ai/c/pay/cs_test_a1s18jaLGK2ANzSVD7EAxI2O..."
+  },
+  {
+    "objectID": "core.html#pagination",
+    "href": "core.html#pagination",
+    "title": "core",
+    "section": "Pagination",
+    "text": "Pagination\nThe paged function is the low-level pagination helper. It calls a Stripe list operation, yields each response page, then keeps requesting the next page with starting_after until Stripe reports that there are no more results.\nBecause it yields whole pages, callers still have access to page metadata such as has_more, along with the page’s data list.\n\nsource\n\npaged\n\ndef paged(\n    oper, args:VAR_POSITIONAL, kwargs:VAR_KEYWORD\n):\n\nIterate through all pages of a Stripe API operation.\n\nps = L()\nasync for p in paged(sapi.v1.customers.get, limit=2):\n    ps.append(p)\n    if len(ps) == 2: break\n\ncs = L(c for p in ps for c in p.data)\ntest_eq(len(ps), 2)\ntest_eq(len(cs), 4)\n\nThe pages function is the convenience wrapper for cases where you want the items, not the page objects. It consumes paged, pulls each item out of each page’s data list, and returns one flat L of Stripe objects.\nUse this when you expect the result set to be reasonably small. For very large collections, iterate with paged instead so you can process one page at a time.\n\nsource\n\n\npages\n\nasync def pages(\n    oper, args:VAR_POSITIONAL, kwargs:VAR_KEYWORD\n):\n\nRetrieve all items from all pages of a Stripe API operation.\nLet’s test the pagination with the coupons endpoint.\n\ncoupons = await pages(sapi.v1.coupons.get, limit=100)\nlen(coupons), coupons[0].keys()\n\n(588,\n dict_keys(['id', 'object', 'amount_off', 'created', 'currency', 'duration', 'duration_in_months', 'livemode', 'max_redemptions', 'metadata', 'name', 'percent_off', 'redeem_by', 'times_redeemed', 'valid']))"
+  },
+  {
+    "objectID": "core.html#webhooks",
+    "href": "core.html#webhooks",
+    "title": "core",
+    "section": "Webhooks",
+    "text": "Webhooks\nThe webhook helpers handle the other direction of the Stripe integration. API calls start in Python and go out to Stripe; webhooks start at Stripe and arrive as signed HTTP requests. The main job here is to verify that the payload really came from Stripe, then convert the event body into the same StripeObject style used by normal API responses.\nFor the example below, we create a small FastHTML app and run it locally in the notebook. Stripe can then forward webhook events to /webhook, which lets the notebook test the full request path instead of only testing helper functions in isolation.\n\nfrom fasthtml.common import *\nfrom fasthtml.jupyter import *\n\n\napp,rt = fast_app()\nif 'server' in globals(): server.stop()\nserver = JupyUvi(app,port=8000)\nShow = partial(HTMX, app=app)\n\nThis creates a real customer and then asks Stripe for the matching customer.created event. The resulting payload is used as a realistic webhook body for the signature tests, rather than a hand-written toy dictionary.\n\nemail = 'test@example.com'\nc = await sapi.v1.customers.post(email=email)\nevts = await sapi.v1.events.get(limit=10, type='customer.created')\npayload = obj2dict(first(evts.data, lambda e: e.data.id == c.id))\npayload.keys()\n\ndict_keys(['id', 'object', 'api_version', 'created', 'data', 'livemode', 'pending_webhooks', 'request', 'type'])\n\n\nverify_webhook checks the Stripe signature header. It rebuilds Stripe’s signed message from the timestamp and raw payload, computes the expected HMAC with the webhook secret, and compares it with the v1 signature. It also rejects old timestamps so a captured webhook cannot be replayed much later.\n\nsource\n\nverify_webhook\n\ndef verify_webhook(\n    payload, sig_header, secret, tolerance:int=300\n):\n\nVerify a Stripe webhook signature. Raises StripeSignatureError on failure.\nmk_webhook is a test helper. It serializes the payload the same compact way Stripe does, signs it with the webhook secret, and returns both the body and the Stripe-Signature header. The following checks cover the happy path, an expired timestamp, and an invalid signature.\n\ndef mk_webhook(payload, secret, t=None):\n    \"Create Stripe-style webhook payload and signature\"\n    if t is None: t = int(time.time())\n    payload = json.dumps(payload, separators=(',', ':')) if isinstance(payload, dict) else payload\n    if hasattr(payload, 'decode'): payload = payload.decode()\n    sig = hmac.new(secret.encode(), f'{t}.{payload}'.encode(), hashlib.sha256).hexdigest()\n    return payload, f't={t},v1={sig}'\n\npayload_s, sig = mk_webhook(payload, os.environ['STRIPE_WEBHOOK_SECRET'])\nverify_webhook(payload_s, sig, os.environ['STRIPE_WEBHOOK_SECRET'])\nwith ExceptionExpected(StripeSignatureError): verify_webhook(payload_s, sig, os.environ['STRIPE_WEBHOOK_SECRET'], tolerance=0)\nwith ExceptionExpected(StripeSignatureError): verify_webhook(payload_s, 't=123,v1=abc', os.environ['STRIPE_WEBHOOK_SECRET'], tolerance=1)\n\nThe Stripe CLI forwards real webhook events to the local FastHTML route. This is useful while developing because the notebook can receive the same signed requests that a deployed app would receive.\n\nstripe listen --forward-to http://localhost:8000/webhook &gt; /tmp/stripe.log 2&gt;&1 &\n\nparse_webhook is the method an app route normally calls. It reads the raw request body, verifies the signature header against self.webhook_key, parses the JSON, and converts the event into StripeObject form. Keeping this on StripeApi means webhook handling uses the same credentials and object conversion as the rest of the client.\n\nsource\n\n\nStripeApi.parse_webhook\n\nasync def parse_webhook(\n    req\n):\n\nCall self as a function.\nSome applications share one Stripe account across more than one service. filter_evt gives each StripeApi instance a simple routing check: if service_name is set, the event must carry matching STRIPE_SERVICE_NAME metadata. If service_name is falsey, every event is accepted.\n\nsource\n\n\nStripeApi.filter_evt\n\ndef filter_evt(\n    evt\n):\n\nReturn True if evt belongs to this StripeApi service.\nThe route itself stays small: parse and verify the webhook, then handle the resulting event object. The final payment intent call gives Stripe something real to send back through the listener, so the printed output should show both the event and the payment intent object.\n\n@rt\nasync def webhook(req):\n    'Handle incoming webhooks from stripe'\n    evt = await sapi.parse_webhook(req)\n    print(evt, evt.data)\n\nShould print the event and payment intent objects.\n\npi = await sapi.v1.payment_intents.post(customer=c.id, amount=10_00, currency='usd')\npi\n\n\nPaymentIntent(id=pi_3TXoJMKGhqIw9PXm0tIX6jVa)\n\n\n\nEvent(id=evt_3TXoJMKGhqIw9PXm0UIFzrM6) PaymentIntent(id=pi_3TXoJMKGhqIw9PXm0tIX6jVa)"
+  },
+  {
+    "objectID": "how_to/subscriptions.html",
+    "href": "how_to/subscriptions.html",
+    "title": "How to Create Subscriptions",
+    "section": "",
+    "text": "This guide shows you how to create recurring subscription payments using FastStripe.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#problem",
+    "href": "how_to/subscriptions.html#problem",
+    "title": "How to Create Subscriptions",
+    "section": "Problem",
+    "text": "Problem\nYou want to charge customers on a recurring basis (monthly, yearly, etc.) for a service or product.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#solution",
+    "href": "how_to/subscriptions.html#solution",
+    "title": "How to Create Subscriptions",
+    "section": "Solution",
+    "text": "Solution\nUse FastStripe’s subscription() method which creates the necessary recurring price and checkout session.\n\nfrom faststripe.core import *\nimport os\n\nsapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#monthly-subscription",
+    "href": "how_to/subscriptions.html#monthly-subscription",
+    "title": "How to Create Subscriptions",
+    "section": "Monthly subscription",
+    "text": "Monthly subscription\n\n# Create a monthly subscription\nsubscription = sapi.subscription(\n    product_name='Pro Plan',\n    amount_cents=19_99,  # $19.99/month\n    success_url='https://yoursite.com/welcome',\n    cancel_url='https://yoursite.com/pricing',\n    interval='month'\n)\n\nprint(f\"Subscription URL: {subscription.url[:64]}...\")\n\nSubscription URL: https://billing.answer.ai/c/pay/cs_test_a1YQn5kS4oYiNldiazJRxtoT...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#annual-subscription-with-discount",
+    "href": "how_to/subscriptions.html#annual-subscription-with-discount",
+    "title": "How to Create Subscriptions",
+    "section": "Annual subscription with discount",
+    "text": "Annual subscription with discount\n\n# Create an annual subscription (typically discounted)\nannual_sub = sapi.subscription(\n    product_name='Pro Plan',\n    amount_cents=199_99,  # $199.99/year (save $39.89)\n    success_url='https://yoursite.com/welcome',\n    cancel_url='https://yoursite.com/pricing',\n    interval='year'\n)\n\nprint(f\"Annual subscription URL: {annual_sub.url[:64]}...\")\n\nAnnual subscription URL: https://billing.answer.ai/c/pay/cs_test_a1Icxv2IwvHVBtZa66JCp1qm...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#pre-fill-customer-email",
+    "href": "how_to/subscriptions.html#pre-fill-customer-email",
+    "title": "How to Create Subscriptions",
+    "section": "Pre-fill customer email",
+    "text": "Pre-fill customer email\n\n# Pre-fill customer email in checkout\nsubscription = sapi.subscription(\n    product_name='Pro Plan',\n    amount_cents=19_99,\n    success_url='https://yoursite.com/welcome',\n    cancel_url='https://yoursite.com/pricing',\n    customer_email='user@example.com'\n)\n\nprint(f\"Subscription with email: {subscription.url[:64]}...\")\n\nSubscription with email: https://billing.answer.ai/c/pay/cs_test_a1uSlojJSlUQMOJMXpPFK8Cy...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#manual-subscription-setup",
+    "href": "how_to/subscriptions.html#manual-subscription-setup",
+    "title": "How to Create Subscriptions",
+    "section": "Manual subscription setup",
+    "text": "Manual subscription setup\nFor more control over subscription features:\n\n# Create product\nproduct = sapi.products.post(\n    name='Enterprise Plan',\n    description='Full access to all features'\n)\n\n# Create recurring price\nprice = sapi.prices.post(\n    product=product.id,\n    unit_amount=99_99,  # $99.99\n    currency='usd',\n    recurring={\n        'interval': 'month',\n        'usage_type': 'licensed'  # per-seat billing\n    }\n)\n\n# Create subscription checkout\ncheckout = sapi.checkout.sessions_post(\n    mode='subscription',\n    line_items=[{\n        'price': price.id,\n        'quantity': 1\n    }],\n    success_url='https://yoursite.com/success?session_id={CHECKOUT_SESSION_ID}',\n    cancel_url='https://yoursite.com/cancel',\n    allow_promotion_codes=True,  # Enable promo codes\n    subscription_data={\n        'trial_period_days': 14  # 14-day free trial\n    }\n)\n\nprint(f\"Enterprise subscription: {checkout.url[:64]}...\")\n\nEnterprise subscription: https://billing.answer.ai/c/pay/cs_test_b14ZoLwpDsJuqFFV7AEu7jNO...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#managing-existing-subscriptions",
+    "href": "how_to/subscriptions.html#managing-existing-subscriptions",
+    "title": "How to Create Subscriptions",
+    "section": "Managing existing subscriptions",
+    "text": "Managing existing subscriptions\nRetrieve and modify existing subscriptions:\n\n# List all subscriptions\nsubscriptions = pages(sapi.subscriptions.get, limit=100)\nprint(f\"Found {len(subscriptions)} subscriptions\")\n\n# Get a specific subscription\nsub = subscriptions[0]\nprint(f\"Subscription {sub.id}: {sub.status}\")\n\nFound 181 subscriptions\nSubscription sub_1SwObZKGhqIw9PXmwQczCKzX: active",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "how_to/subscriptions.html#best-practices",
+    "href": "how_to/subscriptions.html#best-practices",
+    "title": "How to Create Subscriptions",
+    "section": "Best practices",
+    "text": "Best practices\n\nAlways use webhooks to handle subscription lifecycle events\nConsider offering free trials to increase conversions\nUse promotion codes for discounts and marketing campaigns\nSet up proper success/cancel URLs that match your user flow\nTest subscription flows thoroughly in test mode",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Create Subscriptions"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "",
+    "text": "Before starting this tutorial, you’ll need:\n\nPython 3.10 or higher installed\nA Stripe account (sign up at stripe.com)\nYour Stripe test API keys from the Stripe Dashboard",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#prerequisites",
+    "href": "index.html#prerequisites",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "",
+    "text": "Before starting this tutorial, you’ll need:\n\nPython 3.10 or higher installed\nA Stripe account (sign up at stripe.com)\nYour Stripe test API keys from the Stripe Dashboard",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#why-faststripe",
+    "href": "index.html#why-faststripe",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Why FastStripe?",
+    "text": "Why FastStripe?\nFastStripe offers several advantages over the official Stripe Python SDK:\n\nSelf-documenting: See available parameters with descriptions in your IDE\nGenerated from Stripe’s OpenAPI spec: Endpoints are built from a pinned Stripe API snapshot\nLightweight: Small runtime built on fastcore, fastspec, and httpx\nConsistent API: Nested Stripe resources use HTTP verb methods (post, get) with visible parameters",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#step-1-installation",
+    "href": "index.html#step-1-installation",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Step 1: Installation",
+    "text": "Step 1: Installation\nFirst, install FastStripe using pip:\npip install faststripe\nOr install the latest development version:\npip install git+https://github.com/AnswerDotAI/faststripe.git",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#versioning",
+    "href": "index.html#versioning",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Versioning",
+    "text": "Versioning\nFastStripe versions follow Stripe’s API versioning scheme (e.g., 2025.05.28.x). Each FastStripe release is pinned to a specific Stripe API version, ensuring:\n\nStability: Your code won’t break when Stripe updates their API\nPredictability: Same behavior across all environments\n\nCompatibility: Choose the Stripe API version that works for your application\n\nWhen you install FastStripe, you get a specific snapshot of the Stripe API that’s been tested and validated. The minor version represents non-breaking changes we add such as better higher-level APIs.",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#step-2-get-your-api-key",
+    "href": "index.html#step-2-get-your-api-key",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Step 2: Get your API key",
+    "text": "Step 2: Get your API key\nFor this tutorial, use your Stripe test API key from the Stripe Dashboard. We’ll pass it explicitly with api_key= so the setup is visible in the code.\nUse a test key while following the tutorial. Test secret keys start with sk_test_ and should still be treated as private.",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#step-3-initialize-faststripe",
+    "href": "index.html#step-3-initialize-faststripe",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Step 3: Initialize FastStripe",
+    "text": "Step 3: Initialize FastStripe\nNow let’s import FastStripe and initialize it with your API key:\n\nfrom faststripe.core import *\n\n# Initialize with your Stripe test API key\nsapi = StripeApi(api_key='sk_test_your_test_key_here')\n\n\nsapi.v1.customers.post\n\n\nCreate a customer\nParameters: - address (, optional): The customer’s address. Learn about country-specific requirements for calculating tax. - balance (int, optional): An integer amount in cents (or local equivalent) that represents the customer’s current balance, which affect the customer’s future invoices. A negative amount represents a credit that decreases the amount due on an invoice; a positive amount increases the amount due on an invoice. - business_name (str, optional): The customer’s business name. This may be up to 150 characters. - cash_balance (dict, optional): Balance information and default balance settings for this customer. - description (str, optional): An arbitrary string that you can attach to a customer object. It is displayed alongside the customer in the dashboard. - email (str, optional): Customer’s email address. It’s displayed alongside the customer in your dashboard and can be useful for searching and tracking. This may be up to 512 characters. - expand (list, optional): Specifies which fields in the response should be expanded. - individual_name (str, optional): The customer’s full name. This may be up to 150 characters. - invoice_prefix (str, optional): The prefix for the customer used to generate unique invoice numbers. Must be 3–12 uppercase letters or numbers. - invoice_settings (dict, optional): Default invoice settings for this customer. - metadata (, optional): Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to metadata. - name (str, optional): The customer’s full name or business name. - next_invoice_sequence (int, optional): The sequence to be used on the customer’s next invoice. Defaults to 1. - payment_method (str, optional) - phone (str, optional): The customer’s phone number. - preferred_locales (list, optional): Customer’s preferred languages, ordered by preference. - shipping (, optional): The customer’s shipping information. Appears on invoices emailed to this customer. - source (str, optional) - tax (dict, optional): Tax details about the customer. - tax_exempt (str, optional): The customer’s tax exemption. One of none, exempt, or reverse. - tax_id_data (list, optional): The customer’s tax IDs. - test_clock (str, optional): ID of the test clock to attach to the customer.\n\n\n\n\n# Create a customer\ncustomer = await sapi.v1.customers.post(email='user@example.com', name='John Doe')\nprint(customer.id, customer.email)\n\ncus_UXABX4zNYeDcJ9 user@example.com\n\n\n\nSelf-Documenting API\nOne of FastStripe’s key advantages is that all methods include parameter documentation directly in your IDE. You can see what parameters are available without checking external docs:\n# Explore available methods and their parameters\nsapi.v1.customers.post?\ndef post(\n    address:Unset=UNSET, balance:int=UNSET, business_name:str=UNSET, cash_balance:dict=UNSET, description:str=UNSET,\n    email:str=UNSET, expand:list=UNSET, individual_name:str=UNSET, invoice_prefix:str=UNSET,\n    invoice_settings:dict=UNSET, metadata:Unset=UNSET, name:str=UNSET, next_invoice_sequence:int=UNSET,\n    payment_method:str=UNSET, phone:str=UNSET, preferred_locales:list=UNSET, shipping:Unset=UNSET, source:str=UNSET,\n    tax:dict=UNSET, tax_exempt:str=UNSET, tax_id_data:list=UNSET, test_clock:str=UNSET\n):\n\nCreate a customer\n\nParameters: ...\nIt also supports tab completion when filling in parameters!\n\n\nComplete API Coverage\nFastStripe provides access to Stripe’s API through nested OpenAPI groups generated from the pinned Stripe spec:\n\n# Access any Stripe resource with consistent patterns\nproduct = await sapi.v1.products.post(name='New Product')\nprint(f\"Created product: {product.name} with ID: {product.id}\")\n\nCreated product: New Product with ID: prod_UXAC1jJuFtyOx2\n\n\n\n# Fetch existing resources\ncustomers = await sapi.v1.customers.get(limit=3)\nprint(f\"Found {len(customers.data)} customers\")\n\nFound 3 customers\n\n\n\n# All responses are AttrDict objects for easy dot notation access\npayment_intent = await sapi.v1.payment_intents.post(amount=1000, currency='usd')\nprint(f\"Payment intent status: {payment_intent.status}, amount: ${payment_intent.amount/100}\")\n\nPayment intent status: requires_payment_method, amount: $10.0\n\n\n\n\nPagination Support\nFastStripe includes built-in utilities for handling paginated API responses, making it easy to work with large requests.\n\nasync for p in paged(sapi.v1.coupons.get, limit=5): break\nprint(f\"Got {len(p.data)} coupons\")\nprint(f\"Has more pages: {p.has_more}\")\n\nGot 5 coupons\nHas more pages: True\n\n\n\ncoupons = await pages(sapi.v1.coupons.get, limit=100)\nlen(coupons), coupons[0]\n\n(588, Coupon(id=ioULYkUY))\n\n\nThe pagination utilities work with any Stripe resource that supports pagination:\n\npaged(): Async generator that yields each page from a resource API\npages(): Fetches all pages and returns the collected items\n\nThis makes it easy to process large datasets without manually handling pagination tokens.",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "index.html#handling-webhooks",
+    "href": "index.html#handling-webhooks",
+    "title": "Tutorial: Get Started with FastStripe",
+    "section": "Handling Webhooks",
+    "text": "Handling Webhooks\nStripe signs webhook payloads so your app can reject fake or modified events. FastStripe provided the parse_webhook(req) helper for this which returns a FastStripe Event object.\nIn a webhook route, parse_webhook() verifies the signature before returning the event object:\n\n# Example inside a FastHTML/FastAPI-style route\n@rt\nasync def webhook(req):\n    'Handle incoming webhooks from stripe'\n    evt = await sapi.parse_webhook(req)\n    print(evt, evt.data)\n\nFor lower-level integrations, use verify_webhook() directly with the raw payload, Stripe signature header, and webhook secret. parse_webhook() is usually the nicer path because it verifies the event and converts nested Stripe data into FastStripe objects.",
+    "crumbs": [
+      "Home",
+      "Get Started"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html",
+    "href": "how_to/one_time_payments.html",
+    "title": "How to Accept One-Time Payments",
+    "section": "",
+    "text": "This guide shows you how to create one-time payment links using FastStripe’s simplified API.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#problem",
+    "href": "how_to/one_time_payments.html#problem",
+    "title": "How to Accept One-Time Payments",
+    "section": "Problem",
+    "text": "Problem\nYou want to accept a one-time payment for a product or service without dealing with the complexity of creating products, prices, and checkout sessions manually.",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#solution",
+    "href": "how_to/one_time_payments.html#solution",
+    "title": "How to Accept One-Time Payments",
+    "section": "Solution",
+    "text": "Solution\nUse FastStripe’s one_time_payment() method which handles all the setup automatically.\n\nfrom faststripe.core import StripeApi\nimport os\n\n# Initialize the API\nsapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#basic-one-time-payment",
+    "href": "how_to/one_time_payments.html#basic-one-time-payment",
+    "title": "How to Accept One-Time Payments",
+    "section": "Basic one-time payment",
+    "text": "Basic one-time payment\n\n# Create a simple payment link\ncheckout = sapi.one_time_payment(\n    product_name='Digital Course',\n    amount_cents=49_99,  # $49.99\n    success_url='https://yoursite.com/success',\n    cancel_url='https://yoursite.com/cancel'\n)\n\nprint(f\"Payment URL: {checkout.url[:64]}...\")\n\nPayment URL: https://billing.answer.ai/c/pay/cs_test_a1cUOqAjwyxJpKtfksIpNViB...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#different-currencies",
+    "href": "how_to/one_time_payments.html#different-currencies",
+    "title": "How to Accept One-Time Payments",
+    "section": "Different currencies",
+    "text": "Different currencies\nFastStripe supports all currencies that Stripe accepts:\n\n# Euro payment\neur_checkout = sapi.one_time_payment(\n    product_name='European Product',\n    amount_cents=25_00,  # €25.00\n    success_url='https://yoursite.com/success',\n    cancel_url='https://yoursite.com/cancel',\n    currency='eur'\n)\n\nprint(f\"EUR Payment URL: {eur_checkout.url[:64]}...\")\n\nEUR Payment URL: https://billing.answer.ai/c/pay/cs_test_a1xhktl4eWXJwP1aCzuwtzBr...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#manual-approach",
+    "href": "how_to/one_time_payments.html#manual-approach",
+    "title": "How to Accept One-Time Payments",
+    "section": "Manual approach",
+    "text": "Manual approach\nIf you need more control, you can create products, prices, and checkout sessions manually:\n\n# Create product\nproduct = sapi.products.post(\n    name='Advanced Course',\n    description='Complete Python development course'\n)\n\n# Create price\nprice = sapi.prices.post(\n    product=product.id,\n    unit_amount=99_99,  # $99.99\n    currency='usd'\n)\n\n# Create checkout session\ncheckout = sapi.checkout.sessions_post(\n    mode='payment',\n    line_items=[{\n        'price': price.id,\n        'quantity': 1\n    }],\n    success_url='https://yoursite.com/success',\n    cancel_url='https://yoursite.com/cancel'\n)\n\nprint(f\"Manual checkout URL: {checkout.url[:64]}...\")\n\nManual checkout URL: https://billing.answer.ai/c/pay/cs_test_a1wddAo7iSKwVLKJJh69cTSd...",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "how_to/one_time_payments.html#tips",
+    "href": "how_to/one_time_payments.html#tips",
+    "title": "How to Accept One-Time Payments",
+    "section": "Tips",
+    "text": "Tips\n\nUse test mode (keys starting with sk_test_) during development\nFastStripe automatically creates products and prices if they don’t exist\nStore the checkout session ID for tracking payments\nUse webhooks to handle successful payments in your application",
+    "crumbs": [
+      "Home",
+      "How To",
+      "How to Accept One-Time Payments"
+    ]
+  },
+  {
+    "objectID": "00_spec.html",
+    "href": "00_spec.html",
+    "title": "faststripe",
+    "section": "",
+    "text": "source\n\nupdate_version\n\ndef update_version(\n    \n):\n\nUpdate the version to the latest version of the Stripe API and the endpoints file.\n\nupdate_version()\n\nUpdated version to 2026.04.22.0"
+  }
+]

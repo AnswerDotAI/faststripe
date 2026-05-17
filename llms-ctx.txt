@@ -1,0 +1,687 @@
+<project title="faststripe">FastStripe is a lightweight Python library that dynamically generates Stripe API methods from the OpenAPI specification. It provides a clean, Pythonic interface to Stripe's payment processing APIs while automatically staying up-to-date with the latest API changes.
+
+Here are some tips on using FastStripe:
+
+- **Simple initialization**: Create a `StripeApi` instance with your API key: `api = StripeApi(api_key="sk_...")`
+- **Organized endpoints**: Access endpoints by resource type (e.g., `api.customers.create()`, `api.products.fetch()`, `api.checkout_sessions.create()`)
+- **Automatic parameter flattening**: Pass nested dictionaries directly - FastStripe automatically flattens them to Stripe's expected format
+- **AttrDict responses**: All API responses are converted to AttrDict objects for convenient dot notation access (e.g., `customer.id`, `payment.status`)
+- **High-level convenience methods**: Use simplified methods like `api.one_time_payment()` and `api.subscription()` for common workflows
+- **Dynamic API updates**: The library fetches Stripe's latest OpenAPI spec at runtime, ensuring compatibility with new features
+- **Consistent method naming**: POST operations become `create()`, GET operations become `fetch()` for predictable method names
+- **Bearer authentication**: API key is automatically included in request headers
+- **Form-encoded requests**: All data is properly formatted for Stripe's form-encoding requirements
+- **Type hints**: Generated type stubs provide IDE support and better development experience
+- **Development workflow**: Use `faststripe_update` command to regenerate endpoints from latest Stripe API spec<tutorials><doc title="One-time Payments" desc="Create simple payment links and process one-time charges"># How to Accept One-Time Payments
+
+
+
+This guide shows you how to create one-time payment links using
+FastStripe’s simplified API.
+
+## Problem
+
+You want to accept a one-time payment for a product or service without
+dealing with the complexity of creating products, prices, and checkout
+sessions manually.
+
+## Solution
+
+Use FastStripe’s `one_time_payment()` method which handles all the setup
+automatically.
+
+``` python
+from faststripe.core import StripeApi
+import os
+
+# Initialize the API
+sapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])
+```
+
+## Basic one-time payment
+
+``` python
+# Create a simple payment link
+checkout = sapi.one_time_payment(
+    product_name='Digital Course',
+    amount_cents=49_99,  # $49.99
+    success_url='https://yoursite.com/success',
+    cancel_url='https://yoursite.com/cancel'
+)
+
+print(f"Payment URL: {checkout.url[:64]}...")
+```
+
+    Payment URL: https://billing.answer.ai/c/pay/cs_test_a1cUOqAjwyxJpKtfksIpNViB...
+
+## Different currencies
+
+FastStripe supports all currencies that Stripe accepts:
+
+``` python
+# Euro payment
+eur_checkout = sapi.one_time_payment(
+    product_name='European Product',
+    amount_cents=25_00,  # €25.00
+    success_url='https://yoursite.com/success',
+    cancel_url='https://yoursite.com/cancel',
+    currency='eur'
+)
+
+print(f"EUR Payment URL: {eur_checkout.url[:64]}...")
+```
+
+    EUR Payment URL: https://billing.answer.ai/c/pay/cs_test_a1xhktl4eWXJwP1aCzuwtzBr...
+
+## Manual approach
+
+If you need more control, you can create products, prices, and checkout
+sessions manually:
+
+``` python
+# Create product
+product = sapi.products.post(
+    name='Advanced Course',
+    description='Complete Python development course'
+)
+
+# Create price
+price = sapi.prices.post(
+    product=product.id,
+    unit_amount=99_99,  # $99.99
+    currency='usd'
+)
+
+# Create checkout session
+checkout = sapi.checkout.sessions_post(
+    mode='payment',
+    line_items=[{
+        'price': price.id,
+        'quantity': 1
+    }],
+    success_url='https://yoursite.com/success',
+    cancel_url='https://yoursite.com/cancel'
+)
+
+print(f"Manual checkout URL: {checkout.url[:64]}...")
+```
+
+    Manual checkout URL: https://billing.answer.ai/c/pay/cs_test_a1wddAo7iSKwVLKJJh69cTSd...
+
+## Tips
+
+- Use test mode (keys starting with `sk_test_`) during development
+- FastStripe automatically creates products and prices if they don’t
+  exist
+- Store the checkout session ID for tracking payments
+- Use webhooks to handle successful payments in your application</doc><doc title="Subscriptions" desc="Set up recurring billing and subscription management"># How to Create Subscriptions
+
+
+
+This guide shows you how to create recurring subscription payments using
+FastStripe.
+
+## Problem
+
+You want to charge customers on a recurring basis (monthly, yearly,
+etc.) for a service or product.
+
+## Solution
+
+Use FastStripe’s `subscription()` method which creates the necessary
+recurring price and checkout session.
+
+``` python
+from faststripe.core import *
+import os
+
+sapi = StripeApi(os.environ['STRIPE_SECRET_KEY'])
+```
+
+## Monthly subscription
+
+``` python
+# Create a monthly subscription
+subscription = sapi.subscription(
+    product_name='Pro Plan',
+    amount_cents=19_99,  # $19.99/month
+    success_url='https://yoursite.com/welcome',
+    cancel_url='https://yoursite.com/pricing',
+    interval='month'
+)
+
+print(f"Subscription URL: {subscription.url[:64]}...")
+```
+
+    Subscription URL: https://billing.answer.ai/c/pay/cs_test_a1YQn5kS4oYiNldiazJRxtoT...
+
+## Annual subscription with discount
+
+``` python
+# Create an annual subscription (typically discounted)
+annual_sub = sapi.subscription(
+    product_name='Pro Plan',
+    amount_cents=199_99,  # $199.99/year (save $39.89)
+    success_url='https://yoursite.com/welcome',
+    cancel_url='https://yoursite.com/pricing',
+    interval='year'
+)
+
+print(f"Annual subscription URL: {annual_sub.url[:64]}...")
+```
+
+    Annual subscription URL: https://billing.answer.ai/c/pay/cs_test_a1Icxv2IwvHVBtZa66JCp1qm...
+
+## Pre-fill customer email
+
+``` python
+# Pre-fill customer email in checkout
+subscription = sapi.subscription(
+    product_name='Pro Plan',
+    amount_cents=19_99,
+    success_url='https://yoursite.com/welcome',
+    cancel_url='https://yoursite.com/pricing',
+    customer_email='user@example.com'
+)
+
+print(f"Subscription with email: {subscription.url[:64]}...")
+```
+
+    Subscription with email: https://billing.answer.ai/c/pay/cs_test_a1uSlojJSlUQMOJMXpPFK8Cy...
+
+## Manual subscription setup
+
+For more control over subscription features:
+
+``` python
+# Create product
+product = sapi.products.post(
+    name='Enterprise Plan',
+    description='Full access to all features'
+)
+
+# Create recurring price
+price = sapi.prices.post(
+    product=product.id,
+    unit_amount=99_99,  # $99.99
+    currency='usd',
+    recurring={
+        'interval': 'month',
+        'usage_type': 'licensed'  # per-seat billing
+    }
+)
+
+# Create subscription checkout
+checkout = sapi.checkout.sessions_post(
+    mode='subscription',
+    line_items=[{
+        'price': price.id,
+        'quantity': 1
+    }],
+    success_url='https://yoursite.com/success?session_id={CHECKOUT_SESSION_ID}',
+    cancel_url='https://yoursite.com/cancel',
+    allow_promotion_codes=True,  # Enable promo codes
+    subscription_data={
+        'trial_period_days': 14  # 14-day free trial
+    }
+)
+
+print(f"Enterprise subscription: {checkout.url[:64]}...")
+```
+
+    Enterprise subscription: https://billing.answer.ai/c/pay/cs_test_b14ZoLwpDsJuqFFV7AEu7jNO...
+
+## Managing existing subscriptions
+
+Retrieve and modify existing subscriptions:
+
+``` python
+# List all subscriptions
+subscriptions = pages(sapi.subscriptions.get, limit=100)
+print(f"Found {len(subscriptions)} subscriptions")
+
+# Get a specific subscription
+sub = subscriptions[0]
+print(f"Subscription {sub.id}: {sub.status}")
+```
+
+    Found 181 subscriptions
+    Subscription sub_1SwObZKGhqIw9PXmwQczCKzX: active
+
+## Best practices
+
+- Always use webhooks to handle subscription lifecycle events
+- Consider offering free trials to increase conversions
+- Use promotion codes for discounts and marketing campaigns
+- Set up proper success/cancel URLs that match your user flow
+- Test subscription flows thoroughly in test mode</doc><doc title="Customer Management" desc="Create and manage customer records"><!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'">
+    <title>Page not found &middot; GitHub Pages</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: #f1f1f1;
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container { margin: 50px auto 40px auto; width: 600px; text-align: center; }
+
+      a { color: #4183c4; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      h1 { width: 800px; position:relative; left: -100px; letter-spacing: -1px; line-height: 60px; font-size: 60px; font-weight: 100; margin: 0px 0 50px 0; text-shadow: 0 1px 0 #fff; }
+      p { color: rgba(0, 0, 0, 0.5); margin: 20px 0; line-height: 1.6; }
+
+      ul { list-style: none; margin: 25px 0; padding: 0; }
+      li { display: table-cell; font-weight: bold; width: 1%; }
+
+      .logo { display: inline-block; margin-top: 35px; }
+      .logo-img-2x { display: none; }
+      @media
+      only screen and (-webkit-min-device-pixel-ratio: 2),
+      only screen and (   min--moz-device-pixel-ratio: 2),
+      only screen and (     -o-min-device-pixel-ratio: 2/1),
+      only screen and (        min-device-pixel-ratio: 2),
+      only screen and (                min-resolution: 192dpi),
+      only screen and (                min-resolution: 2dppx) {
+        .logo-img-1x { display: none; }
+        .logo-img-2x { display: inline-block; }
+      }
+
+      #suggestions {
+        margin-top: 35px;
+        color: #ccc;
+      }
+      #suggestions a {
+        color: #666666;
+        font-weight: 200;
+        font-size: 14px;
+        margin: 0 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <h1>404</h1>
+      <p><strong>File not found</strong></p>
+
+      <p>
+        The site configured at this address does not
+        contain the requested file.
+      </p>
+
+      <p>
+        If this is your site, make sure that the filename case matches the URL
+        as well as any file permissions.<br>
+        For root URLs (like <code>http://example.com/</code>) you must provide an
+        <code>index.html</code> file.
+      </p>
+
+      <p>
+        <a href="https://help.github.com/pages/">Read the full documentation</a>
+        for more information about using <strong>GitHub Pages</strong>.
+      </p>
+
+      <div id="suggestions">
+        <a href="https://githubstatus.com">GitHub Status</a> &mdash;
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
+      </div>
+
+      <a href="/" class="logo logo-img-1x">
+      </a>
+
+      <a href="/" class="logo logo-img-2x">
+      </a>
+    </div>
+  </body>
+</html></doc><doc title="Webhooks" desc="Handle Stripe webhook events in your application"><!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'">
+    <title>Page not found &middot; GitHub Pages</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: #f1f1f1;
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container { margin: 50px auto 40px auto; width: 600px; text-align: center; }
+
+      a { color: #4183c4; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      h1 { width: 800px; position:relative; left: -100px; letter-spacing: -1px; line-height: 60px; font-size: 60px; font-weight: 100; margin: 0px 0 50px 0; text-shadow: 0 1px 0 #fff; }
+      p { color: rgba(0, 0, 0, 0.5); margin: 20px 0; line-height: 1.6; }
+
+      ul { list-style: none; margin: 25px 0; padding: 0; }
+      li { display: table-cell; font-weight: bold; width: 1%; }
+
+      .logo { display: inline-block; margin-top: 35px; }
+      .logo-img-2x { display: none; }
+      @media
+      only screen and (-webkit-min-device-pixel-ratio: 2),
+      only screen and (   min--moz-device-pixel-ratio: 2),
+      only screen and (     -o-min-device-pixel-ratio: 2/1),
+      only screen and (        min-device-pixel-ratio: 2),
+      only screen and (                min-resolution: 192dpi),
+      only screen and (                min-resolution: 2dppx) {
+        .logo-img-1x { display: none; }
+        .logo-img-2x { display: inline-block; }
+      }
+
+      #suggestions {
+        margin-top: 35px;
+        color: #ccc;
+      }
+      #suggestions a {
+        color: #666666;
+        font-weight: 200;
+        font-size: 14px;
+        margin: 0 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <h1>404</h1>
+      <p><strong>File not found</strong></p>
+
+      <p>
+        The site configured at this address does not
+        contain the requested file.
+      </p>
+
+      <p>
+        If this is your site, make sure that the filename case matches the URL
+        as well as any file permissions.<br>
+        For root URLs (like <code>http://example.com/</code>) you must provide an
+        <code>index.html</code> file.
+      </p>
+
+      <p>
+        <a href="https://help.github.com/pages/">Read the full documentation</a>
+        for more information about using <strong>GitHub Pages</strong>.
+      </p>
+
+      <div id="suggestions">
+        <a href="https://githubstatus.com">GitHub Status</a> &mdash;
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
+      </div>
+
+      <a href="/" class="logo logo-img-1x">
+      </a>
+
+      <a href="/" class="logo logo-img-2x">
+      </a>
+    </div>
+  </body>
+</html></doc></tutorials><architecture & implementation><doc title="Architecture Overview" desc="Core design patterns and dynamic API generation"><!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'">
+    <title>Page not found &middot; GitHub Pages</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: #f1f1f1;
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container { margin: 50px auto 40px auto; width: 600px; text-align: center; }
+
+      a { color: #4183c4; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      h1 { width: 800px; position:relative; left: -100px; letter-spacing: -1px; line-height: 60px; font-size: 60px; font-weight: 100; margin: 0px 0 50px 0; text-shadow: 0 1px 0 #fff; }
+      p { color: rgba(0, 0, 0, 0.5); margin: 20px 0; line-height: 1.6; }
+
+      ul { list-style: none; margin: 25px 0; padding: 0; }
+      li { display: table-cell; font-weight: bold; width: 1%; }
+
+      .logo { display: inline-block; margin-top: 35px; }
+      .logo-img-2x { display: none; }
+      @media
+      only screen and (-webkit-min-device-pixel-ratio: 2),
+      only screen and (   min--moz-device-pixel-ratio: 2),
+      only screen and (     -o-min-device-pixel-ratio: 2/1),
+      only screen and (        min-device-pixel-ratio: 2),
+      only screen and (                min-resolution: 192dpi),
+      only screen and (                min-resolution: 2dppx) {
+        .logo-img-1x { display: none; }
+        .logo-img-2x { display: inline-block; }
+      }
+
+      #suggestions {
+        margin-top: 35px;
+        color: #ccc;
+      }
+      #suggestions a {
+        color: #666666;
+        font-weight: 200;
+        font-size: 14px;
+        margin: 0 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <h1>404</h1>
+      <p><strong>File not found</strong></p>
+
+      <p>
+        The site configured at this address does not
+        contain the requested file.
+      </p>
+
+      <p>
+        If this is your site, make sure that the filename case matches the URL
+        as well as any file permissions.<br>
+        For root URLs (like <code>http://example.com/</code>) you must provide an
+        <code>index.html</code> file.
+      </p>
+
+      <p>
+        <a href="https://help.github.com/pages/">Read the full documentation</a>
+        for more information about using <strong>GitHub Pages</strong>.
+      </p>
+
+      <div id="suggestions">
+        <a href="https://githubstatus.com">GitHub Status</a> &mdash;
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
+      </div>
+
+      <a href="/" class="logo logo-img-1x">
+      </a>
+
+      <a href="/" class="logo logo-img-2x">
+      </a>
+    </div>
+  </body>
+</html></doc><doc title="OpenAPI Integration" desc="How FastStripe uses Stripe's OpenAPI spec"><!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'">
+    <title>Page not found &middot; GitHub Pages</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: #f1f1f1;
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container { margin: 50px auto 40px auto; width: 600px; text-align: center; }
+
+      a { color: #4183c4; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      h1 { width: 800px; position:relative; left: -100px; letter-spacing: -1px; line-height: 60px; font-size: 60px; font-weight: 100; margin: 0px 0 50px 0; text-shadow: 0 1px 0 #fff; }
+      p { color: rgba(0, 0, 0, 0.5); margin: 20px 0; line-height: 1.6; }
+
+      ul { list-style: none; margin: 25px 0; padding: 0; }
+      li { display: table-cell; font-weight: bold; width: 1%; }
+
+      .logo { display: inline-block; margin-top: 35px; }
+      .logo-img-2x { display: none; }
+      @media
+      only screen and (-webkit-min-device-pixel-ratio: 2),
+      only screen and (   min--moz-device-pixel-ratio: 2),
+      only screen and (     -o-min-device-pixel-ratio: 2/1),
+      only screen and (        min-device-pixel-ratio: 2),
+      only screen and (                min-resolution: 192dpi),
+      only screen and (                min-resolution: 2dppx) {
+        .logo-img-1x { display: none; }
+        .logo-img-2x { display: inline-block; }
+      }
+
+      #suggestions {
+        margin-top: 35px;
+        color: #ccc;
+      }
+      #suggestions a {
+        color: #666666;
+        font-weight: 200;
+        font-size: 14px;
+        margin: 0 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <h1>404</h1>
+      <p><strong>File not found</strong></p>
+
+      <p>
+        The site configured at this address does not
+        contain the requested file.
+      </p>
+
+      <p>
+        If this is your site, make sure that the filename case matches the URL
+        as well as any file permissions.<br>
+        For root URLs (like <code>http://example.com/</code>) you must provide an
+        <code>index.html</code> file.
+      </p>
+
+      <p>
+        <a href="https://help.github.com/pages/">Read the full documentation</a>
+        for more information about using <strong>GitHub Pages</strong>.
+      </p>
+
+      <div id="suggestions">
+        <a href="https://githubstatus.com">GitHub Status</a> &mdash;
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
+      </div>
+
+      <a href="/" class="logo logo-img-1x">
+      </a>
+
+      <a href="/" class="logo logo-img-2x">
+      </a>
+    </div>
+  </body>
+</html></doc></architecture & implementation><api reference><doc title="Core API" desc="Complete reference for all FastStripe classes and methods"><!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'">
+    <title>Page not found &middot; GitHub Pages</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: #f1f1f1;
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container { margin: 50px auto 40px auto; width: 600px; text-align: center; }
+
+      a { color: #4183c4; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      h1 { width: 800px; position:relative; left: -100px; letter-spacing: -1px; line-height: 60px; font-size: 60px; font-weight: 100; margin: 0px 0 50px 0; text-shadow: 0 1px 0 #fff; }
+      p { color: rgba(0, 0, 0, 0.5); margin: 20px 0; line-height: 1.6; }
+
+      ul { list-style: none; margin: 25px 0; padding: 0; }
+      li { display: table-cell; font-weight: bold; width: 1%; }
+
+      .logo { display: inline-block; margin-top: 35px; }
+      .logo-img-2x { display: none; }
+      @media
+      only screen and (-webkit-min-device-pixel-ratio: 2),
+      only screen and (   min--moz-device-pixel-ratio: 2),
+      only screen and (     -o-min-device-pixel-ratio: 2/1),
+      only screen and (        min-device-pixel-ratio: 2),
+      only screen and (                min-resolution: 192dpi),
+      only screen and (                min-resolution: 2dppx) {
+        .logo-img-1x { display: none; }
+        .logo-img-2x { display: inline-block; }
+      }
+
+      #suggestions {
+        margin-top: 35px;
+        color: #ccc;
+      }
+      #suggestions a {
+        color: #666666;
+        font-weight: 200;
+        font-size: 14px;
+        margin: 0 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <h1>404</h1>
+      <p><strong>File not found</strong></p>
+
+      <p>
+        The site configured at this address does not
+        contain the requested file.
+      </p>
+
+      <p>
+        If this is your site, make sure that the filename case matches the URL
+        as well as any file permissions.<br>
+        For root URLs (like <code>http://example.com/</code>) you must provide an
+        <code>index.html</code> file.
+      </p>
+
+      <p>
+        <a href="https://help.github.com/pages/">Read the full documentation</a>
+        for more information about using <strong>GitHub Pages</strong>.
+      </p>
+
+      <div id="suggestions">
+        <a href="https://githubstatus.com">GitHub Status</a> &mdash;
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
+      </div>
+
+      <a href="/" class="logo logo-img-1x">
+      </a>
+
+      <a href="/" class="logo logo-img-2x">
+      </a>
+    </div>
+  </body>
+</html></doc></api reference></project>
