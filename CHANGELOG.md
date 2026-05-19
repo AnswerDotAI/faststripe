@@ -2,6 +2,15 @@
 
 <!-- do not remove -->
 
+## 2026.04.22.0
+
+### New Features
+
+- Migrated to `fastspec` for openapi parsing ([#16](https://github.com/AnswerDotAI/faststripe/pull/16))
+- added webhook handling & publishable key ([#15](https://github.com/AnswerDotAI/faststripe/pull/15)), thanks to [@kafkasl](https://github.com/kafkasl)
+- Add StripeError exception for better error handling ([#14](https://github.com/AnswerDotAI/faststripe/pull/14)), thanks to [@ncoop57](https://github.com/ncoop57)
+
+
 ## 2026.01.28.3
 
 ### New Features
