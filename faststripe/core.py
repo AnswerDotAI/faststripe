@@ -18,7 +18,7 @@ from .stripe_spec import sspec
 import json,hmac,hashlib,time,re,httpx
 
 # %% ../nbs/01_core.ipynb #1db6b434
-def stripe_group(oid, path, verb):
+def stripe_group(oid, path, verb, ptags, optags):
     return [s[1:-1] if s.startswith('{') and s.endswith('}') else s for s in path.strip('/').split('/')], verb
 
 sspec = dict2obj(sspec)
@@ -113,18 +113,20 @@ async def pages(oper, *args, **kwargs):
     "Retrieve all items from all pages of a Stripe API operation."
     return L([x async for page in paged(oper, *args, **kwargs) for x in page.data])
 
-# %% ../nbs/01_core.ipynb #05a5095b
+# %% ../nbs/01_core.ipynb #a5730b15
 def verify_webhook(payload, sig_header, secret, tolerance=300):
-    "Verify a Stripe webhook signature. Raises StripeSignatureError on failure."
+    "Verify a Stripe webhook signature, accepting any of multiple v1 entries"
     if hasattr(payload, 'decode'): payload = payload.decode('utf-8')
-    try: parts = dict(p.split('=', 1) for p in sig_header.split(','))
-    except Exception: raise StripeSignatureError("Unable to parse signature header")
-    t, v1 = parts.get('t'), parts.get('v1')
-    if not t or not v1: raise StripeSignatureError("No v1 signature found in header")
-    signed = f"{t}.{payload}"
-    expected = hmac.new(secret.encode(), signed.encode(), hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(expected, v1): raise StripeSignatureError("Signature mismatch")
-    if (time.time() - int(t)) > tolerance: raise StripeSignatureError("Timestamp outside tolerance zone")
+    parts = [p.split('=', 1) for p in sig_header.split(',')]
+    if any(len(p) != 2 for p in parts): raise StripeSignatureError('Unable to parse signature header')
+    t = next((v for k,v in parts if k=='t'), None)
+    v1s = [v for k,v in parts if k=='v1']
+    if not t or not v1s: raise StripeSignatureError('No v1 signature found in header')
+    exp = hmac.new(secret.encode(), f'{t}.{payload}'.encode(), hashlib.sha256).hexdigest()
+    if not any(hmac.compare_digest(exp, v) for v in v1s): raise StripeSignatureError('Signature mismatch')
+    try: age = time.time() - int(t)
+    except Exception: raise StripeSignatureError('Invalid timestamp')
+    if age > tolerance: raise StripeSignatureError('Timestamp outside tolerance zone')
     return True
 
 # %% ../nbs/01_core.ipynb #0070850f
