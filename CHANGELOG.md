@@ -2,6 +2,12 @@
 
 <!-- do not remove -->
 
+## 2026.05.27.0
+
+### New Features
+
+- Update Stripe spec to 2026-05-27: new payment methods, webhook verifier improvements, and API enhancements ([#17](https://github.com/AnswerDotAI/faststripe/pull/17)), thanks to [@ncoop57](https://github.com/ncoop57)
+
 ## 2026.04.22.0
 
 ### New Features
