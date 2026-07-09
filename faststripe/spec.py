@@ -15,7 +15,7 @@ oapi_url = 'https://raw.githubusercontent.com/stripe/openapi/refs/heads/master/l
 
 def update_version():
     'Update the version to the latest version of the Stripe API and the endpoints file.'
-    sspec = urlsend(oapi_url, 'GET', return_json=True)
+    sspec = urljson(oapi_url)
     stripe_version = sspec['info']['version'].split('.')[0].replace('-', '.')
 
     cfg = get_config()
