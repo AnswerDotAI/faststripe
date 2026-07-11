@@ -9,22 +9,16 @@ Before starting this tutorial, you’ll need:
 
 - Python 3.10 or higher installed
 - A Stripe account (sign up at [stripe.com](https://stripe.com))
-- Your Stripe test API keys from the [Stripe
-  Dashboard](https://dashboard.stripe.com/test/apikeys)
+- Your Stripe test API keys from the [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys)
 
 ## Why FastStripe?
 
-FastStripe offers several advantages over the official Stripe Python
-SDK:
+FastStripe offers several advantages over the official Stripe Python SDK:
 
-- **Self-documenting**: See available parameters with descriptions in
-  your IDE
-- **Generated from Stripe’s OpenAPI spec**: Endpoints are built from a
-  pinned Stripe API snapshot
-- **Lightweight**: Small runtime built on `fastcore`, `fastspec`, and
-  `httpx`
-- **Consistent API**: Nested Stripe resources use HTTP verb methods
-  (`post`, `get`) with visible parameters
+- **Self-documenting**: See available parameters with descriptions in your IDE
+- **Generated from Stripe’s OpenAPI spec**: Endpoints are built from a pinned Stripe API snapshot
+- **Lightweight**: Small runtime built on `fastcore`, `fastspec`, and `httpx`
+- **Consistent API**: Nested Stripe resources use HTTP verb methods (`post`, `get`) with visible parameters
 
 ## Step 1: Installation
 
@@ -42,27 +36,19 @@ pip install git+https://github.com/AnswerDotAI/faststripe.git
 
 ## Versioning
 
-FastStripe versions follow Stripe’s API versioning scheme (e.g.,
-`2025.05.28.x`). Each FastStripe release is pinned to a specific Stripe
-API version, ensuring:
+FastStripe versions follow Stripe’s API versioning scheme (e.g., `2025.05.28.x`). Each FastStripe release is pinned to a specific Stripe API version, ensuring:
 
 - **Stability**: Your code won’t break when Stripe updates their API
 - **Predictability**: Same behavior across all environments  
-- **Compatibility**: Choose the Stripe API version that works for your
-  application
+- **Compatibility**: Choose the Stripe API version that works for your application
 
-When you install FastStripe, you get a specific snapshot of the Stripe
-API that’s been tested and validated. The minor version represents
-non-breaking changes we add such as better higher-level APIs.
+When you install FastStripe, you get a specific snapshot of the Stripe API that’s been tested and validated. The minor version represents non-breaking changes we add such as better higher-level APIs.
 
 ## Step 2: Get your API key
 
-For this tutorial, use your Stripe test API key from the Stripe
-Dashboard. We’ll pass it explicitly with `api_key=` so the setup is
-visible in the code.
+For this tutorial, use your Stripe test API key from the Stripe Dashboard. We’ll pass it explicitly with `api_key=` so the setup is visible in the code.
 
-Use a test key while following the tutorial. Test secret keys start with
-`sk_test_` and should still be treated as private.
+Use a test key while following the tutorial. Test secret keys start with `sk_test_` and should still be treated as private.
 
 ## Step 3: Initialize FastStripe
 
@@ -83,44 +69,29 @@ sapi.v1.customers.post
 
 Create a customer
 
-Parameters: - address (, optional): The customer’s address. Learn about
-[country-specific requirements for calculating
-tax](https://docs.stripe.com/invoicing/taxes?dashboard-or-api=dashboard#set-up-customer). -
-balance (int, optional): An integer amount in cents (or local
-equivalent) that represents the customer’s current balance, which affect
-the customer’s future invoices. A negative amount represents a credit
-that decreases the amount due on an invoice; a positive amount increases
-the amount due on an invoice. - business_name (str, optional): The
-customer’s business name. This may be up to *150 characters*. -
-cash_balance (dict, optional): Balance information and default balance
-settings for this customer. - description (str, optional): An arbitrary
-string that you can attach to a customer object. It is displayed
-alongside the customer in the dashboard. - email (str, optional):
-Customer’s email address. It’s displayed alongside the customer in your
-dashboard and can be useful for searching and tracking. This may be up
-to *512 characters*. - expand (list, optional): Specifies which fields
-in the response should be expanded. - individual_name (str, optional):
-The customer’s full name. This may be up to *150 characters*. -
-invoice_prefix (str, optional): The prefix for the customer used to
-generate unique invoice numbers. Must be 3–12 uppercase letters or
-numbers. - invoice_settings (dict, optional): Default invoice settings
-for this customer. - metadata (, optional): Set of [key-value
-pairs](https://docs.stripe.com/api/metadata) that you can attach to an
-object. This can be useful for storing additional information about the
-object in a structured format. Individual keys can be unset by posting
-an empty value to them. All keys can be unset by posting an empty value
-to `metadata`. - name (str, optional): The customer’s full name or
-business name. - next_invoice_sequence (int, optional): The sequence to
-be used on the customer’s next invoice. Defaults to 1. - payment_method
-(str, optional) - phone (str, optional): The customer’s phone number. -
-preferred_locales (list, optional): Customer’s preferred languages,
-ordered by preference. - shipping (, optional): The customer’s shipping
-information. Appears on invoices emailed to this customer. - source
-(str, optional) - tax (dict, optional): Tax details about the
-customer. - tax_exempt (str, optional): The customer’s tax exemption.
-One of `none`, `exempt`, or `reverse`. - tax_id_data (list, optional):
-The customer’s tax IDs. - test_clock (str, optional): ID of the test
-clock to attach to the customer.
+Parameters:
+- address (, optional): The customer’s address. Learn about [country-specific requirements for calculating tax](https://docs.stripe.com/invoicing/taxes?dashboard-or-api=dashboard#set-up-customer).
+- balance (int, optional): An integer amount in cents (or local equivalent) that represents the customer’s current balance, which affect the customer’s future invoices. A negative amount represents a credit that decreases the amount due on an invoice; a positive amount increases the amount due on an invoice.
+- business_name (str, optional): The customer’s business name. This may be up to *150 characters*.
+- cash_balance (dict, optional): Balance information and default balance settings for this customer.
+- description (str, optional): An arbitrary string that you can attach to a customer object. It is displayed alongside the customer in the dashboard.
+- email (str, optional): Customer’s email address. It’s displayed alongside the customer in your dashboard and can be useful for searching and tracking. This may be up to *512 characters*.
+- expand (list, optional): Specifies which fields in the response should be expanded.
+- individual_name (str, optional): The customer’s full name. This may be up to *150 characters*.
+- invoice_prefix (str, optional): The prefix for the customer used to generate unique invoice numbers. Must be 3–12 uppercase letters or numbers.
+- invoice_settings (dict, optional): Default invoice settings for this customer.
+- metadata (, optional): Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+- name (str, optional): The customer’s full name or business name.
+- next_invoice_sequence (int, optional): The sequence to be used on the customer’s next invoice. Defaults to 1.
+- payment_method (str, optional)
+- phone (str, optional): The customer’s phone number.
+- preferred_locales (list, optional): Customer’s preferred languages, ordered by preference.
+- shipping (, optional): The customer’s shipping information. Appears on invoices emailed to this customer.
+- source (str, optional)
+- tax (dict, optional): Tax details about the customer.
+- tax_exempt (str, optional): The customer’s tax exemption. One of `none`, `exempt`, or `reverse`.
+- tax_id_data (list, optional): The customer’s tax IDs.
+- test_clock (str, optional): ID of the test clock to attach to the customer.
 
 </div>
 
@@ -134,9 +105,7 @@ print(customer.id, customer.email)
 
 ### Self-Documenting API
 
-One of FastStripe’s key advantages is that all methods include parameter
-documentation directly in your IDE. You can see what parameters are
-available without checking external docs:
+One of FastStripe’s key advantages is that all methods include parameter documentation directly in your IDE. You can see what parameters are available without checking external docs:
 
 ``` python
 # Explore available methods and their parameters
@@ -159,8 +128,7 @@ It also supports tab completion when filling in parameters!
 
 ### Complete API Coverage
 
-FastStripe provides access to Stripe’s API through nested OpenAPI groups
-generated from the pinned Stripe spec:
+FastStripe provides access to Stripe’s API through nested OpenAPI groups generated from the pinned Stripe spec:
 
 ``` python
 # Access any Stripe resource with consistent patterns
@@ -188,8 +156,7 @@ print(f"Payment intent status: {payment_intent.status}, amount: ${payment_intent
 
 ### Pagination Support
 
-FastStripe includes built-in utilities for handling paginated API
-responses, making it easy to work with large requests.
+FastStripe includes built-in utilities for handling paginated API responses, making it easy to work with large requests.
 
 ``` python
 async for p in paged(sapi.v1.coupons.get, limit=5): break
@@ -207,25 +174,18 @@ len(coupons), coupons[0]
 
     (588, Coupon(id=ioULYkUY))
 
-The pagination utilities work with any Stripe resource that supports
-pagination:
+The pagination utilities work with any Stripe resource that supports pagination:
 
-- **[`paged()`](https://AnswerDotAI.github.io/faststripe/core.html#paged)**:
-  Async generator that yields each page from a resource API
-- **[`pages()`](https://AnswerDotAI.github.io/faststripe/core.html#pages)**:
-  Fetches all pages and returns the collected items
+- **[`paged()`](https://AnswerDotAI.github.io/faststripe/core.html#paged)**: Async generator that yields each page from a resource API
+- **[`pages()`](https://AnswerDotAI.github.io/faststripe/core.html#pages)**: Fetches all pages and returns the collected items
 
-This makes it easy to process large datasets without manually handling
-pagination tokens.
+This makes it easy to process large datasets without manually handling pagination tokens.
 
 ## Handling Webhooks
 
-Stripe signs webhook payloads so your app can reject fake or modified
-events. FastStripe provided the `parse_webhook(req)` helper for this
-which returns a FastStripe Event object.
+Stripe signs webhook payloads so your app can reject fake or modified events. FastStripe provided the `parse_webhook(req)` helper for this which returns a FastStripe Event object.
 
-In a webhook route, `parse_webhook()` verifies the signature before
-returning the event object:
+In a webhook route, `parse_webhook()` verifies the signature before returning the event object:
 
 ``` python
 # Example inside a FastHTML/FastAPI-style route
@@ -236,8 +196,4 @@ async def webhook(req):
     print(evt, evt.data)
 ```
 
-For lower-level integrations, use
-[`verify_webhook()`](https://AnswerDotAI.github.io/faststripe/core.html#verify_webhook)
-directly with the raw payload, Stripe signature header, and webhook
-secret. `parse_webhook()` is usually the nicer path because it verifies
-the event and converts nested Stripe data into FastStripe objects.
+For lower-level integrations, use [`verify_webhook()`](https://AnswerDotAI.github.io/faststripe/core.html#verify_webhook) directly with the raw payload, Stripe signature header, and webhook secret. `parse_webhook()` is usually the nicer path because it verifies the event and converts nested Stripe data into FastStripe objects.
