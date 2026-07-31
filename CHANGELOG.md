@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2026.05.27.1
+
+### New Features
+
+- Use fastcore.apisurface.`mk_groups` instead of fastspec private `_build_groups` ([#18](https://github.com/AnswerDotAI/faststripe/issues/18))
+
+
 ## 2026.05.27.0
 
 ### New Features
@@ -102,4 +109,3 @@
 ## 0.0.1
 
 - Initial release!
-
