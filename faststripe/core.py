@@ -12,7 +12,8 @@ __all__ = ['sspec', 'pspec', 'obj_typs', 'stripe_group', 'StripeError', 'StripeS
 from fastcore.net import *
 from fastcore.utils import *
 from fastspec.spec import SpecParser
-from fastspec.oapi import AsyncTransport, _build_groups, OpenAPIClient, OpFunc
+from fastspec.oapi import AsyncTransport, OpenAPIClient, OpFunc
+from fastcore.apisurface import mk_groups
 from .stripe_spec import sspec
 
 import json,hmac,hashlib,time,re,httpx
@@ -95,7 +96,7 @@ class StripeApi(OpenAPIClient):
         self.transport = StripeTransport(timeout=timeout, base_headers=self.headers)
         self.ops = [OpFunc(o, self.transport, pspec.base_url, _form_encoder) for o in pspec.ops]
         self.func_dict = {f"{o.path}:{o.verb.upper()}": o for o in self.ops}
-        self.groups = _build_groups(self.ops)
+        self.groups = mk_groups(self.ops)
         for k,v in self.groups.items(): setattr(self, k, v)
 
 # %% ../nbs/01_core.ipynb #a99be92c
