@@ -12,11 +12,12 @@ __all__ = ['sspec', 'pspec', 'obj_typs', 'stripe_group', 'StripeError', 'StripeS
 from fastcore.net import *
 from fastcore.utils import *
 from fastspec.spec import SpecParser
-from fastspec.oapi import AsyncTransport, OpenAPIClient, OpFunc
+from fastspec.oapi import OpenAPIClient, OpFunc
+from fasttransport.core import AsyncTransport
 from fastcore.apisurface import mk_groups
 from .stripe_spec import sspec
 
-import json,hmac,hashlib,time,re,httpx
+import json,hmac,hashlib,time,re,httpx2
 
 # %% ../nbs/01_core.ipynb #1db6b434
 def stripe_group(oid, path, verb, ptags, optags):
@@ -81,7 +82,7 @@ def _form_encoder(data, prefix=''):
 class StripeTransport(AsyncTransport):
     async def request(self, *args, raw=False, **kwargs):
         try: res = await super().request(*args, raw=raw, **kwargs)
-        except httpx.HTTPStatusError as e: raise StripeError(e) from None
+        except httpx2.HTTPStatusError as e: raise StripeError(e) from None
         return res if raw else s2obj(res)
 
 class StripeApi(OpenAPIClient):
