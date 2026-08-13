@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2026.05.27.2
+
+### New Features
+
+- Switch to fasttransport AsyncTransport and httpx2 ([#19](https://github.com/AnswerDotAI/faststripe/issues/19))
+
+
 ## 2026.05.27.1
 
 ### New Features
