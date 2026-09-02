@@ -2,6 +2,17 @@
 
 <!-- do not remove -->
 
+## 2026.05.27.3
+
+### New Features
+
+- Add `stripe_listen` and `stripe_trigger`, driving the Stripe CLI from Python ([#21](https://github.com/AnswerDotAI/faststripe/pull/21)), thanks to [@jph00](https://github.com/jph00)
+
+### Bugs Squashed
+
+- Update CLI flags for fastcore.script hyphenation ([#20](https://github.com/AnswerDotAI/faststripe/pull/20)), thanks to [@jph00](https://github.com/jph00)
+
+
 ## 2026.05.27.2
 
 ### New Features
