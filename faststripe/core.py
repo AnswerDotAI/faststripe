@@ -6,18 +6,20 @@ Docs: https://AnswerDotAI.github.io/faststripe/core.html.md"""
 
 # %% auto #0
 __all__ = ['sspec', 'pspec', 'obj_typs', 'stripe_group', 'StripeError', 'StripeSignatureError', 'camel', 'StripeObject', 's2obj',
-           'StripeTransport', 'StripeApi', 'paged', 'pages', 'verify_webhook']
+           'StripeTransport', 'StripeApi', 'paged', 'pages', 'verify_webhook', 'StripeListener', 'stripe_listen',
+           'stripe_trigger']
 
 # %% ../nbs/01_core.ipynb #039eaef3
 from fastcore.net import *
 from fastcore.utils import *
+from collections import deque
 from fastspec.spec import SpecParser
 from fastspec.oapi import OpenAPIClient, OpFunc
 from fasttransport.core import AsyncTransport
 from fastcore.apisurface import mk_groups
 from .stripe_spec import sspec
 
-import json,hmac,hashlib,time,re,httpx2
+import json,hmac,hashlib,time,re,httpx2,asyncio
 
 # %% ../nbs/01_core.ipynb #1db6b434
 def stripe_group(oid, path, verb, ptags, optags):
@@ -130,6 +132,65 @@ def verify_webhook(payload, sig_header, secret, tolerance=300):
     except Exception: raise StripeSignatureError('Invalid timestamp')
     if age > tolerance: raise StripeSignatureError('Timestamp outside tolerance zone')
     return True
+
+# %% ../nbs/01_core.ipynb #4ab2d40f
+class StripeListener:
+    "A `stripe listen` process forwarding webhooks to `url`; `close` stops it when this object started it"
+    def __init__(self, url, proc=None, secret=None):
+        store_attr()
+        self.log = deque(maxlen=200)
+    def close(self):
+        if self.proc and self.proc.returncode is None: self.proc.terminate()
+    def __repr__(self): return f'StripeListener({self.url!r}, secret={self.secret and self.secret[:9]+"…"!r})'
+
+
+# %% ../nbs/01_core.ipynb #2ba7ffaf
+def _listening(url):
+    "Whether some `stripe listen` process already forwards to `url`"
+    import psutil
+    return any(url in c and 'listen' in c and Path(c[0]).stem == 'stripe' for p in psutil.process_iter(['cmdline']) if (c := p.info['cmdline']))
+
+async def stripe_listen(
+    url, # Where the CLI forwards events, e.g. `http://localhost:8000/webhook`
+    api_key=None, # Stripe secret key for the CLI; `STRIPE_SECRET_KEY` if None, and the CLI's own login when that is unset too
+    timeout=30, # Seconds to wait for the CLI to report ready
+):
+    "Start `stripe listen --forward-to url` unless one is already running, and wait for the CLI to report ready"
+    if _listening(url): return StripeListener(url)
+    api_key = ifnone(api_key, os.getenv('STRIPE_SECRET_KEY'))
+    args = ['listen', '--forward-to', url] + (['--api-key', api_key] if api_key else [])
+    proc = await asyncio.create_subprocess_exec('stripe', *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+    res = StripeListener(url, proc)
+    async def _ready():
+        async for line in proc.stdout:
+            res.log.append(line := line.decode().rstrip())
+            if 'Ready!' in line: return line
+    try: line = await asyncio.wait_for(_ready(), timeout)
+    except TimeoutError:
+        res.close()
+        raise TimeoutError(f'stripe listen did not report ready in {timeout}s:\n' + '\n'.join(res.log)) from None
+    if not line: raise RuntimeError('stripe listen exited:\n' + '\n'.join(res.log))
+    res.secret = first(re.findall(r'whsec_\w+', line))
+    asyncio.create_task(_drain(proc, res.log))
+    return res
+
+async def _drain(proc, log):
+    "Keep reading the CLI's output so a full pipe never blocks it"
+    async for line in proc.stdout: log.append(line.decode().rstrip())
+
+# %% ../nbs/01_core.ipynb #6cc5f534
+async def stripe_trigger(
+    event, # Event type the CLI should fake, e.g. `payment_intent.succeeded`
+    overrides=None, # Fixture fields to set, e.g. `{'payment_intent:amount': 1000}`
+    api_key=None, # Stripe secret key for the CLI; `STRIPE_SECRET_KEY` if None, and the CLI's own login when that is unset too
+):
+    "Run `stripe trigger event`, returning the CLI's output once the event has been sent"
+    api_key = ifnone(api_key, os.getenv('STRIPE_SECRET_KEY'))
+    args = ['trigger', event] + (['--api-key', api_key] if api_key else []) + [a for k,v in (overrides or {}).items() for a in ('--override', f'{k}={v}')]
+    proc = await asyncio.create_subprocess_exec('stripe', *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+    out = (await proc.communicate())[0].decode()
+    if proc.returncode: raise RuntimeError(f'stripe trigger failed:\n{out}')
+    return out
 
 # %% ../nbs/01_core.ipynb #0070850f
 @patch

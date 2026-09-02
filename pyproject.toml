@@ -22,7 +22,7 @@ Documentation = "https://AnswerDotAI.github.io/faststripe"
 faststripe = "faststripe._modidx:d"
 
 [project.optional-dependencies]
-dev = ['llms-txt', 'python-fasthtml']
+dev = ['llms-txt', 'python-fasthtml', 'psutil']
 
 [project.scripts]
 faststripe_update = "faststripe.spec:update_version"
@@ -39,4 +39,4 @@ allowed_cell_metadata_keys = ['solveit_ai']
 custom_sidebar = false
 
 [tool.chkstyle]
-skip_paths = ["_modidx.py"]
+skip_paths = ["faststripe/stripe_spec.py", "faststripe/endpoints.py"]
