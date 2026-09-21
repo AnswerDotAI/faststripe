@@ -33,6 +33,4 @@ d = { 'settings': { 'branch': 'main',
                                  'faststripe.core.stripe_listen': ('core.html#stripe_listen', 'faststripe/core.py'),
                                  'faststripe.core.stripe_trigger': ('core.html#stripe_trigger', 'faststripe/core.py'),
                                  'faststripe.core.verify_webhook': ('core.html#verify_webhook', 'faststripe/core.py')},
-            'faststripe.endpoints': {},
-            'faststripe.spec': {'faststripe.spec.update_version': ('spec.html#update_version', 'faststripe/spec.py')},
-            'faststripe.stripe_spec': {}}}
+            'faststripe.spec': {'faststripe.spec.update_version': ('spec.html#update_version', 'faststripe/spec.py')}}}
