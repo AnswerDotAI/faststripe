@@ -1,3 +1,3 @@
-__version__ = "2026.05.27.4"
+__version__ = "2026.09.30.0"
 from .core import *
 
