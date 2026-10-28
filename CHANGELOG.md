@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2026.09.30.0
+
+### New Features
+
+- Update to latest ([#22](https://github.com/AnswerDotAI/faststripe/issues/22))
+
+
 ## 2026.05.27.3
 
 ### New Features
