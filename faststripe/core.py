@@ -152,13 +152,15 @@ def _listening(url):
 
 async def stripe_listen(
     url, # Where the CLI forwards events, e.g. `http://localhost:8000/webhook`
+    events=None, # Event name or sequence to forward; None subscribes to all snapshot events (`--all-snapshot`)
     api_key=None, # Stripe secret key for the CLI; `STRIPE_SECRET_KEY` if None, and the CLI's own login when that is unset too
     timeout=30, # Seconds to wait for the CLI to report ready
 ):
     "Start `stripe listen --forward-to url` unless one is already running, and wait for the CLI to report ready"
     if _listening(url): return StripeListener(url)
     api_key = ifnone(api_key, os.getenv('STRIPE_SECRET_KEY'))
-    args = ['listen', '--forward-to', url] + (['--api-key', api_key] if api_key else [])
+    ev_args = ['--events', events if isinstance(events, str) else ','.join(events)] if events else ['--all-snapshot']
+    args = ['listen', '--skip-update', *ev_args, '--forward-to', url] + (['--api-key', api_key] if api_key else [])
     proc = await asyncio.create_subprocess_exec('stripe', *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
     res = StripeListener(url, proc)
     async def _ready():
