@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 2026.09.30.1
+
+### New Features
+
+- Add events param to `stripe_listen`, defaulting to --all-snapshot, and pass --skip-update ([#23](https://github.com/AnswerDotAI/faststripe/issues/23))
+
+
 ## 2026.09.30.0
 
 ### New Features
