@@ -7,7 +7,7 @@ name = "faststripe"
 dynamic = ["version"]
 description = "Fastest way to use the Stripe API in python"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{name = "ncoop57", email = "nathanacooper@proton.me"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python']
@@ -22,7 +22,7 @@ Documentation = "https://AnswerDotAI.github.io/faststripe"
 faststripe = "faststripe._modidx:d"
 
 [project.optional-dependencies]
-dev = ['llms-txt', 'python-fasthtml', 'psutil']
+dev = ['python-fasthtml', 'psutil']
 
 [project.scripts]
 faststripe_update = "faststripe.spec:update_version"
