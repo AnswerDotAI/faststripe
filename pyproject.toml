@@ -34,6 +34,7 @@ version = {attr = "faststripe.__version__"}
 include = ["faststripe"]
 
 [tool.nbdev]
+to_meta = ["export"]
 allowed_metadata_keys = ['solveit']
 allowed_cell_metadata_keys = ['solveit_ai']
 custom_sidebar = false
